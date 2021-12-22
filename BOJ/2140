@@ -1,0 +1,68 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+int N;
+int dx[8] = { 1,-1,0,0,1,-1,1,-1 };
+int dy[8] = { 0,0,1,-1,1,1,-1,-1 };
+int map[101][101] = { 0, };
+
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 1; i <= N; i++) {
+		getchar();
+		char str[101];
+		scanf("%s", str);
+		for (int j = 1; j <= N; j++) {
+			if (str[j - 1] == '#')
+				map[i][j] = -1;
+			else
+				map[i][j] = str[j - 1] - '0';
+		}
+	}
+
+	int cnt = 0;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+
+			if (map[i][j] == -1) {
+				//해당 위치는 지뢰.
+				int k = 0;
+				for (k = 0; k < 8; k++) {
+					//주위가 무엇인지 검사한다.
+					if (1 <= i + dx[k] && i + dx[k] <= N && 1 <= j + dy[k] && j + dy[k] <= N) {
+						//범위내에 존재
+						if (map[i + dx[k]][j + dy[k]] == -1) {	//해당 위치는 지뢰. 
+						}
+						else if(map[i + dx[k]][j + dy[k]] == 0) {
+							//지뢰놓기가 불가능 -> 이전까지 제거했던 카운트를 디돌린다.
+							for (int L = k - 1; L >= 0; L--) {
+								if (map[i + dx[L]][j + dy[L]] != -1)
+									map[i + dx[L]][j + dy[L]] += 1;
+							}
+							break;
+						}
+						else 
+							map[i + dx[k]][j + dy[k]] -= 1;
+					}
+				}
+
+				if (k == 8)
+					cnt++;
+			}
+		}
+	}
+
+	printf("%d", cnt);
+	return 0;
+}

@@ -1,0 +1,57 @@
+#include<cstdio>
+
+bool table[26];
+bool c_table[26];
+int N, M;
+
+void dfs(int prev, int cnt, int check, int b_check) {
+	if (prev <= 26 && cnt == N && b_check >= 2 && check) {
+		for (int i = 0; i < 26; i++) {
+			if (c_table[i] == 1) {
+				printf("%c", 'a'+i);
+			}
+		}
+
+		printf("\n");
+		return;
+	}
+
+	if (prev == 26)
+		return;
+
+	if (table[prev] == 1) {
+		if (prev + 'a' == 'a' || prev + 'a' == 'e' || prev + 'a' == 'i'
+			|| prev + 'a' == 'o' || prev + 'a' == 'u') {
+			//선택함.
+			c_table[prev] = 1;
+			dfs(prev + 1, cnt + 1, 1, b_check);
+			c_table[prev] = 0;
+			//선택 안함
+			dfs(prev + 1, cnt, check, b_check);
+		}
+		else {
+			//선택함
+			c_table[prev] = 1;
+			dfs(prev + 1, cnt + 1, check, b_check+1);
+			c_table[prev] = 0;
+			//선택 안함.
+			dfs(prev + 1, cnt, check, b_check);
+		}
+	}else //다음으로 넘어감.
+		dfs(prev + 1, cnt, check, b_check);
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	char c;
+	for (int i = 0; i < M; i++) {
+		getchar();
+		scanf("%c", &c);
+
+		table[c - 'a'] = 1;
+	}
+
+	dfs(0, 0, 0, 0);
+	return 0;
+}

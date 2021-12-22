@@ -1,0 +1,116 @@
+#include<cstdio>
+#include<cstring>
+
+char str[100001];
+int N;
+int info[100001];
+int start, end;
+
+void reverse() {
+	//start ~ end 까지 뒤집는다.
+	int mid = (start + end) / 2;
+
+	int l = 0;
+	for (int i = start; i <= mid; i++) {
+		int swap = info[i];
+		info[i] = info[end - l];
+		info[end - l] = swap;
+		l++;
+	}
+}
+
+void out_print() {
+	printf("[");
+	for (int i = start; i < end; i++) {
+		printf("%d,", info[i]);
+	}
+	printf("%d", info[end]);
+	printf("]\n");
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+
+	for (int j = 0; j < T; j++) {
+		getchar();
+		scanf("%s", str);
+		scanf("%d", &N);
+
+		getchar();
+		getchar();
+		for (int i = 0; i < N; i++) {
+			scanf("%d", &info[i]);
+			getchar();
+		}
+		//유효한 위치 갱신.
+		start = 0;
+		end = N - 1;
+
+		int len = strlen(str); //함수 길이.
+		for (int i = 0; i < len; i++)
+		{
+			if (str[i] == 'R') {
+				int check = 0;
+
+				for (int k = i + 1; k < len; k++)
+				{
+					if (str[k] == 'R') {
+						//k-i-1개 만큼 뒤에서 뺀다.
+						end -= k - i - 1;
+						check = 1;
+						i = k;
+						break;
+					}
+				}
+
+				if (check == 0)
+				{
+					//R이후 D만 나온다. 
+					end -= len - i - 1;
+					i = len;
+
+					if (start <= end)
+						reverse();
+				}
+			}
+			else {
+				//D 일때
+				int check = 0;
+
+				for (int k = i; k < len; k++)
+				{
+					if (str[k] == 'D')
+						continue;
+					else //'R'발견.
+					{
+						//k-i개 만큼 D 수행
+						check = 1;
+						start += k - i;
+						i = k - 1;
+						break;
+					}
+				}
+
+				if (check == 0) {
+					//전부가 DD이다.
+					start += len - i;
+					i = len;
+				}
+			}
+
+			if (start > end && !(start == end + 1)) {
+				printf("error\n");
+				break;
+			}
+		}
+
+		if (start <= end)
+			out_print();
+		else if (start == end + 1) {
+			printf("[]\n");
+		}
+	}
+
+	return 0;
+}

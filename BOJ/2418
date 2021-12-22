@@ -1,0 +1,63 @@
+#include<iostream>
+#include<cstring>
+#define ull unsigned long long
+using namespace std;
+
+int N, M, S;
+char str[201][201];
+int dx[8] = { 0,0,1,-1,1,-1,1,-1};
+int dy[8] = { 1,-1,0,0,1,1,-1,-1 };
+char cmp[101];
+ull check[201][201][101];
+
+ull dfs(int p_i, int p_j, int l) {
+	if (l == S)
+		return 1;
+
+	if (check[p_i][p_j][l] == -1) {
+		check[p_i][p_j][l] = 0;
+
+		for (int i = 0; i < 8; i++) {
+			int n_i = p_i + dx[i];
+			int n_j = p_j + dy[i];
+
+			if (n_i < 0 || n_i >= N || n_j < 0 || n_j >= M)
+				continue;
+
+			if (str[n_i][n_j] == cmp[l]) {
+				check[p_i][p_j][l] += dfs(n_i, n_j, l + 1);
+			}
+		}
+	}
+	
+	return check[p_i][p_j][l];
+}
+
+int main() {
+	cin >> N >> M >> S;
+	for (int i = 0; i < N; i++) {
+		getchar();
+		cin >> str[i];
+	}
+	getchar();
+	cin >> cmp;
+	memset(check, -1, sizeof(check));
+
+	ull ret = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (str[i][j] == cmp[0]) {
+				ret += dfs(i, j, 1);
+			}
+		}
+	}
+	for (int i = 0;i<S; i++) {
+		if (cmp[i] != cmp[S - i - 1]) {
+			cout << ret;
+			return 0;
+		}
+	}
+
+	cout << ret/2;
+	return 0;
+}

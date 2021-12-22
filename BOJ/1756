@@ -1,0 +1,70 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+const int MAX = 2100000000;
+
+int min(int a, int b) {
+	if (a < b) return a;
+	return b;
+}
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
+}
+
+int N,M;
+int min_arr[300001];
+int info[300001];
+
+int main() {
+	scanf("%d %d", &N, &M);
+	min_arr[0] = MAX;
+	for (int i = 1; i <= N; i++) {
+		scanf("%d", &info[i]);
+		min_arr[i] = min(min_arr[i-1], info[i]);
+	}
+
+	int prev_height = N+1; //현재피자가 있는 높이.
+	for (int i = 0; i < M; i++) {
+		int a;
+		scanf("%d", &a);
+		int left = 1;
+		int right = prev_height-1;
+		int ret = 0;
+		while (left <= right) {
+			int mid = (left + right) / 2;
+			if (min_arr[mid] < a) {
+				right = mid - 1;
+				ret = mid-1;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		if (ret == 0) {//갱신이 안됨 -> 이는 1) 넣을수없는 경우 2) 다 들어가는 경우
+			if (min_arr[prev_height - 1] >= a)
+				prev_height -= 1; //다들어가는 경우
+			else
+				prev_height = 0; //넣을수없는 경우
+		}
+		else
+			prev_height = ret;
+	}
+
+	if (prev_height <= 0)
+		printf("0");
+	else
+		printf("%d", prev_height);
+	return 0;
+}

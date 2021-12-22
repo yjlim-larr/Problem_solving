@@ -107,7 +107,7 @@ int main(){
 	
 	string prev = str;
 	cout << dfs(prev, 0);
-	 
+	
 	 
 	return 0;
 }

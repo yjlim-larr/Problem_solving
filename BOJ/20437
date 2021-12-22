@@ -1,0 +1,60 @@
+#include<iostream>
+#include<cstring>
+#include<vector>
+using namespace std;
+
+int N, M, T;
+string str;
+vector<int> v[30];
+
+int main(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	
+	cin >> T;
+	for(int t=0; t<T; t++){
+		cin >> str;
+		cin >> N;
+		int ans = 210000000;
+		int ret = 0;
+		int size = str.size();
+		
+		for(int i=0; i<=int('z' - 'a'); i++){
+			char start = char(int('a') + i);
+		
+			for(int j=0; j<size; j++){
+				if(str[j] == start){
+					v[i].push_back(j);
+				}
+			}
+		}
+		
+		for(int i=0; i<30; i++){
+			int s = v[i].size();
+			if(s == 0)
+				continue;
+			
+			int p = 0;
+			int pre = v[i][p];
+			
+			for(int j=N-1; j<s; j++){
+				int cnt = v[i][j] - pre + 1;
+				ans = ans < cnt ? ans : cnt;
+				ret = ret < cnt ? cnt : ret;
+				pre = v[i][++p];	
+			}
+		}
+		
+		for(int i=0; i<30; i++){
+			v[i].clear();
+		}
+		
+		if(ans == 210000000)
+			cout << "-1" << '\n';
+		else
+			cout << ans << ' ' << ret << '\n';
+	}
+	
+	return 0;
+}

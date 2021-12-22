@@ -1,0 +1,41 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+
+int F, S, G, U, D;
+bool table[1000001];
+queue<int> q;
+
+int main() {
+	cin >> F >> S >> G >> U >> D;
+	q.push(S);
+	table[S] = 1;
+
+	for (int t = 0;; t++) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			int prev = q.front();
+			q.pop();
+
+			if (prev == G) {
+				cout << t;
+				return 0;
+			}
+
+			if (prev + U <= F && table[prev + U] == 0) {
+				table[prev + U] = 1;
+				q.push(prev + U);
+			}
+
+			if (prev - D >= 1 && table[prev - D] == 0) {
+				table[prev - D] = 1;
+				q.push(prev - D);
+			}
+		}
+	}
+
+	cout << "use the stairs";
+	return 0;
+}

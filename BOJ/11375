@@ -1,0 +1,64 @@
+#include<iostream>
+#include<vector>
+#include<cstring>
+//#pragma warning(disable:4996)
+using namespace std;
+
+const int n_ = 1001;
+int N, M;
+vector<int> v[n_];
+bool visit[n_];
+int child[n_];
+int parent[n_];
+int num = 0;
+
+bool dfs(int prev) { 
+	if (visit[prev])
+		return 0;
+	visit[prev] = 1; 
+
+	int size = v[prev].size();
+	for (int i = 0; i < size; i++) {
+		if (v[prev][i] == child[prev]) //현재 연결을 제외.
+			continue;
+
+		if (parent[v[prev][i]] == 0 || dfs(parent[v[prev][i]])) {
+			parent[v[prev][i]] = prev;
+			child[prev] = v[prev][i];
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	scanf("%d %d", &N, &M);
+	for (int i = 1; i <= N; i++) {
+		int a, b, c;
+		scanf("%d", &a);
+
+		for (int j = 0; j < a; j++) {
+			scanf("%d", &b);
+			v[i].push_back(b);
+		}
+	}
+
+	for (int i = 1; i <= N; i++) {
+		int size = v[i].size();
+
+		for (int j = 0; j < size; j++) {
+			if (parent[v[i][j]] == 0 || dfs(parent[v[i][j]])) {
+				child[i] = v[i][j];
+				parent[v[i][j]] = i;
+				num++;
+				memset(visit, 0, sizeof(visit));
+				break;
+			}
+		}
+	}	
+
+	cout << num;
+	return 0;
+}

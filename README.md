@@ -1,2 +1,3 @@
-# Problem_solving
+# Problem Solving
+
 algorithm problem solving at "acmicpc.net" 

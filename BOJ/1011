@@ -1,0 +1,44 @@
+#include<iostream>
+#define ll long long
+using namespace std;
+
+int T;
+
+int main() {
+	cin >> T;
+
+	ll a, b;
+	for (int I = 0; I < T; I++) {
+		cin >> a >> b;
+		
+		ll ans = b - a;
+		ll n=0;
+		ll left = 1;
+		ll right = b - a;
+		while (left <= right) {
+			ll mid = (left + right) / 2;
+
+			if (ans >= mid*mid + mid) {
+				n = mid;
+				left = mid + 1;
+			}
+			else{
+				right = mid - 1;
+			}
+		}
+
+		ll r_n = ans - n*n - n;
+
+		if (r_n == 0) {
+			cout << 2 * n << '\n';
+		}
+		else if (r_n > n+1) {
+			cout << 2 * n + 2<< '\n';
+		}
+		else {
+			cout << 2 * n + 1<< '\n';
+		}
+	}
+
+	return 0;
+}

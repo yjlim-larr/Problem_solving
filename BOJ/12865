@@ -1,0 +1,43 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int N, M;
+pair<int, int> info[100];
+int dp[100][100001];
+
+int max(int a, int b) {
+	return a < b ? b : a;
+}
+
+int dfs(int prev, int weight) {
+	if (prev == N)
+		return 0;
+
+	if (dp[prev][weight] == -1) {
+		dp[prev][weight] = 0;
+		// 포함 시킨다.
+		int ret = 0;
+		if(weight  + info[prev].first <= M)
+			ret = dfs(prev + 1, weight + info[prev].first) + info[prev].second;
+		//포함x 일때 랑 비교.
+		dp[prev][weight] = max(ret, dfs(prev + 1, weight));
+	}
+
+	return dp[prev][weight];
+}
+
+int main() {
+	cin >> N >> M;
+	int a, b;
+	for (int i = 0; i < N; i++) {
+		cin >> a >> b;
+		info[i].first = a;
+		info[i].second = b;
+	}
+
+	memset(dp, -1, sizeof(dp));
+	cout << dfs(0, 0);
+
+	return 0;
+}

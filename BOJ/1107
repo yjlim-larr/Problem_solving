@@ -1,0 +1,52 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+int min(int a, int b) {
+	if (a < b) return a;
+	return b;
+}
+
+bool er_info[10] = { 0, }; //고장난 정보.
+
+int main() {
+	int N,M;
+	scanf("%d", &N);
+
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++) {
+		getchar();
+		char c;
+		scanf("%c", &c);
+		er_info[c - '0'] = 1;
+	}
+	
+	int ret = abs(N - 100);
+	for (int i = 0; i <= 1000000; i++) {
+		char cmp[10] = { 0, };
+		sprintf(cmp, "%d", i); //정수를 문자열로 전환
+		int k = 0;
+
+		for (k; k < strlen(cmp); k++) {
+			if (er_info[cmp[k] - '0'] == 1)
+				break;
+		}
+
+		if (k == strlen(cmp)) { //해당 채널로 이동할 수 있다.
+			ret = min(ret, abs(N - i) + strlen(cmp));
+		}
+	}
+	
+	printf("%d", ret);
+
+	return 0;
+}

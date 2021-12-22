@@ -1,0 +1,43 @@
+#include<iostream>
+#include<cstring>
+#define ll long long
+using namespace std;
+
+int N;
+int info[101];
+int ans;
+ll dp[101][21];
+
+ll dfs(int prev, int num){
+	if(num > 20 || num < 0){
+		return 0;
+	}
+	
+	if(prev == N-1){
+		if(num == ans)
+			return 1;
+		else
+			return 0;
+	}
+	
+	if(dp[prev][num] == -1){
+		dp[prev][num] = 0;
+		dp[prev][num] = dfs(prev+1, num+info[prev]) + dfs(prev+1, num-info[prev]); 
+	}
+	
+	return dp[prev][num];
+}
+
+
+int main(){
+	cin >> N;
+	for(int i=0; i<N-1; i++){
+		cin >> info[i];
+	}
+	
+	cin >> ans;
+	memset(dp, -1, sizeof(dp));
+	
+	printf("%lld", dfs(1,info[0]));
+	return 0;
+}

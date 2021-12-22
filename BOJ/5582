@@ -1,0 +1,47 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+char str[4001];
+char cmp[4001];
+int dp[4001][4001];
+int N, M;
+
+int dfs(int prev1, int prev2) {
+	if (prev1 >= N || prev2 >= M)
+		return 0;
+
+	if (dp[prev1][prev2] == -1) {
+		dp[prev1][prev2] = 0;
+
+		if (str[prev1] == cmp[prev2])
+			dp[prev1][prev2] = 1 + dfs(prev1 + 1, prev2 + 1);
+		else
+			return 0;
+	}
+
+	return dp[prev1][prev2];
+}
+
+int main() {
+	cin >> str;
+	getchar();
+	cin >> cmp;
+	N = strlen(str);
+	M = strlen(cmp);
+
+	memset(dp, -1, sizeof(dp));
+
+	int ret = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (str[i] == cmp[j]) {
+				int cmp = dfs(i, j);
+				ret = ret < cmp ? cmp : ret;
+			}
+		}
+	}
+
+	cout << ret;
+	return 0;
+}

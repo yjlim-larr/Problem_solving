@@ -1,0 +1,47 @@
+#include<cstdio>
+#include<cstring>
+
+bool table[1003002] = { 0, };
+
+bool func(int num) {
+	char str[100] = { 0, };
+	sprintf(str, "%d", num);
+	int len = strlen(str);
+	char cmp[100] = { 0, };
+
+	for (int i = 0; i < len; i++) {
+		cmp[i] = str[len - 1 - i];
+	}
+
+	for (int j = 0; j < len; j++) {
+		if (cmp[j] != str[j])
+			return 0;
+	}
+
+	return 1;
+}
+
+int main() {
+	int N;
+	scanf("%d", &N);
+	//팰린드롬 -> 소수인지 판별
+
+	for (int i = 2; i <= 1003001; i++) {
+		if (table[i] == 0) {
+			if (i >= N) {
+				//팰리드롬인지 확인.
+				if (func(i)) {
+					printf("%d", i);
+					return 0;
+				}
+			}
+
+			for (int k = 2; k*i <= 1003001; k++) {
+				table[k*i] = 1;
+			}
+
+		}
+	}
+
+	return 0;
+}

@@ -1,0 +1,75 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+const int n_ = 51;
+const int INF = 2100000000;
+int N, M;
+pair<int, int> home[2501]; //집의 정보
+int h_cnt;
+pair<int, int> c[14]; //치킨집의 정보,
+int c_cnt;
+int info[14][2501];
+bool table[14];
+
+int min(int a, int b) {
+	return a < b ? a : b;
+}
+
+int dfs(int prev, int cnt) {
+	//M개의 치킨집을 선택하는 과정
+	if (prev == c_cnt) {
+		if (cnt == M) {
+			//검사 시작.
+			int total = 0;
+			for (int i = 0; i < h_cnt; i++) {
+				int min = INF;
+
+				for (int j = 0; j < c_cnt; j++)
+					if(table[j] == 1)
+						min = min < info[j][i] ? min : info[j][i];
+
+				total += min;
+			}
+			return total;
+		}
+		else
+			return INF; //불가능한 경우.
+	}
+
+	table[prev] = 1;
+	int ret = dfs(prev + 1, cnt + 1);
+	table[prev] = 0;
+	ret = min(ret, dfs(prev+1, cnt));
+
+	return ret;
+}
+
+int main() {
+	cin >> N >> M;
+
+	for (int i = 1; i <= N; i++) {
+		int a;
+
+		for (int j = 1; j <= N; j++) {
+			cin >> a;
+
+			if (a == 1) {
+				home[h_cnt].first = i;
+				home[h_cnt++].second = j;
+			}
+			else if (a == 2) {
+				c[c_cnt].first = i;
+				c[c_cnt++].second = j;
+			}
+		}
+	}
+	
+	//각 치킨 집에서 집까지 거리의 정보
+	for (int i = 0; i < c_cnt; i++) 
+		for (int j = 0; j < h_cnt; j++) 
+			info[i][j] = abs(c[i].first - home[j].first) + abs(c[i].second - home[j].second);
+
+	cout << dfs(0, 0);
+	return 0;
+}

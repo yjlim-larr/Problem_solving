@@ -1,0 +1,91 @@
+#include<iostream>
+using namespace std;
+
+int table[5][9];
+int N;
+pair<int,int> state_info[5]; //현재 몇번째 을 가리키는지.
+
+
+int main() {
+	for (int i = 1; i <= 4; i++) 
+		for (int j = 0; j < 8; j++) 
+			scanf("%1d", &table[i][j]);
+		
+	state_info[1].first = 0;
+	state_info[1].second = 2;
+	state_info[2].first = 6;
+	state_info[2].second = 2;
+	state_info[3].first = 6;
+	state_info[3].second = 2;
+	state_info[4].first = 6;
+	state_info[4].second = 0;
+
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		int a, b;
+		cin >> a >> b;
+
+		int state[5] = { 0, }; 
+		state[a] = b;
+
+		for (int j = a; j < 4; j++) {
+			bool ret = table[j][state_info[j].second]
+				^ table[j + 1][state_info[j + 1].first];
+
+			if (ret == 1) { 
+				if (state[j] == -1)
+					state[j + 1] = 1; 
+				else
+					state[j + 1] = -1; 
+			}
+			else 
+				break;
+		}
+
+		for (int j = a; j > 1; j--) {
+			bool ret = table[j][state_info[j].first]
+				^ table[j - 1][state_info[j - 1].second];
+
+			if (ret == 1) { //서로 다른극
+				if (state[j] == -1)
+					state[j - 1] = 1; 
+				else
+					state[j - 1] = -1;
+			}
+			else
+				break;
+		}
+
+		for (int j = 1; j <= 4; j++) {
+			if (state[j] == 1) {
+				if (state_info[j].first - 1 < 0)
+					state_info[j].first += 8;
+				state_info[j].first = (state_info[j].first - 1) % 8;
+
+				if (state_info[j].second - 1 < 0)
+					state_info[j].second += 8;
+				state_info[j].second = (state_info[j].second - 1) % 8;
+			}
+			else if(state[j] == -1){
+				state_info[j].first = (state_info[j].first + 1) % 8;
+				state_info[j].second = (state_info[j].second + 1) % 8;
+			}
+		}
+	}
+
+	int total = 0;
+	int num = 1;
+	for (int i = 1; i <= 3; i++) {
+		if (state_info[i].second - 2 < 0)
+			state_info[i].second += 8;
+		if (table[i][(state_info[i].second - 2) % 8] == true)
+			total += num;
+		num *= 2;
+	}
+	if (table[4][(state_info[4].first + 2) % 8] == true)
+		total += 8;
+
+	cout << total;
+
+	return 0;
+}

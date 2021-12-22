@@ -1,0 +1,45 @@
+#include<cstdio>
+#include<cstring>
+
+char str[1001];
+int str_len = 0;
+char cmp[1001];
+int cmp_len = 0;
+int dp[1001][1001] = { 0, };
+
+int max(int a, int b) {
+	return a < b ? b : a;
+}
+
+int dfs(int prev_1, int prev_2) {
+	if (prev_1 == str_len || prev_2 == cmp_len)
+			return 0;
+	
+	if (dp[prev_1][prev_2] == -1) {
+		dp[prev_1][prev_2] = 0;
+		if (str[prev_1] == cmp[prev_2]) {
+			//해당 문자를 포함할 꺼?
+			dp[prev_1][prev_2]= dfs(prev_1 + 1, prev_2 + 1) +1; //포함함.
+			dp[prev_1][prev_2]= max(dp[prev_1][prev_2], dfs(prev_1, prev_2 + 1));//포함안함.
+			dp[prev_1][prev_2]= max(dp[prev_1][prev_2], dfs(prev_1 + 1, prev_2));
+		}
+		else {
+			dp[prev_1][prev_2]= max(dp[prev_1][prev_2], dfs(prev_1, prev_2 + 1));
+			dp[prev_1][prev_2]= max(dp[prev_1][prev_2], dfs(prev_1+1, prev_2));
+		}
+	}
+
+	return dp[prev_1][prev_2];
+}
+
+int main() {
+	scanf("%s", str);
+	str_len = strlen(str);
+	getchar();
+	scanf("%s", cmp);
+	cmp_len = strlen(cmp);
+	memset(dp, -1, sizeof(dp));
+
+	printf("%d", dfs(0, 0));
+	return 0;
+}

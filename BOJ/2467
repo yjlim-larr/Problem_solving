@@ -1,0 +1,53 @@
+#include <iostream>
+using namespace std;
+
+typedef long long ll;
+
+ll info[100001];
+int N;
+
+int main() {
+	cin >> N;
+	for(int i=1; i<=N; i++){
+		cin >> info[i];
+	}
+	
+	ll cmp = 1e10;
+	ll r1 = 1e10;
+	ll r2 = 1e10;
+	
+	for(int i=1; i<N; i++){
+		ll a = i;
+		
+		int left = i+1;
+		int right = N;
+		//cout << a << ' '<< left << ' ' << right << '\n';
+		
+		while(left <= right){
+			ll mid = (ll)(left + right)/2;
+			
+			ll ret = info[a] + info[mid];
+			
+			if(cmp > abs(ret)){
+				cmp = abs(ret);
+				//cout << "담김 : " << cmp << ' ' << abs(ret) << ' ' << a << ' '<<mid << '\n';
+				r1 = a;
+				r2 = mid;
+			}
+			
+			if(ret < 0){
+				left = mid + 1;
+			}else if(ret > 0){
+				right = mid -1;
+			}else{
+				cout << info[a] << ' ' << info[mid];
+				return 0;
+			}
+			
+		}
+	}
+	
+	cout << info[r1] << ' ' << info[r2];
+	
+	return 0;
+}

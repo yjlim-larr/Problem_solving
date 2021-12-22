@@ -1,0 +1,65 @@
+#include<cstdio>
+#include<queue>
+#include<vector>
+#include<cstring>
+#include<iostream>
+using namespace std;
+
+int N, cmp;
+
+void bfs() {
+	bool table[10000] = { 0, };
+	queue<pair<int, string>> q;
+	q.push({ N, "" });
+	table[N] = 1;
+
+	for (;;) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			int prev = q.front().first;
+			string s = q.front().second;
+			q.pop();
+
+			if (prev == cmp) {
+				cout << s << '\n';
+				return;
+			}
+			else {
+				int next = (2 * prev) % 10000;
+				if (table[next] == 0) {
+					table[next] = 1;
+					q.push({ next, s + 'D' });
+				}
+
+				next = (prev + 10000 - 1) % 10000;
+				if (table[next] == 0) {
+					table[next] = 1;
+					q.push({ next, s + 'S' });
+				}
+
+				next = (prev * 10) % 10000 + (prev / 1000);
+				if (table[next] == 0) {
+					table[next] = 1;
+					q.push({next, s + 'L' });
+				}
+
+				next = prev / 10 + 1000 * (prev % 10);
+				if (table[next] == 0) {
+					table[next] = 1;
+					q.push({ prev / 10 + 1000 * (prev % 10), s + 'R' });
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int I = 0; I < T; I++) {
+		scanf("%d %d", &N, &cmp);
+		bfs();
+	}
+}

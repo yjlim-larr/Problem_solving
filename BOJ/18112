@@ -1,0 +1,113 @@
+#include<iostream>
+#include<cstring>
+#include<stack>
+using namespace std;
+
+string str;
+string cmp;
+int dp[1<<10];
+int start;
+int goal;
+int ac;
+
+int change(string str2){
+	int len = str2.size();
+	int s = 0;
+	
+	for(int i=0; i<len; i++){
+		int p = 1;
+		for(int j=0; j<len-i-1; j++){
+			p *= 2;
+		}
+		
+		s += p*int(str2[i] - '0');
+	}
+	
+	return s;
+}
+
+string to_bin(int a){
+	stack<char> s;
+	string r;
+	
+	for(;;){
+		if(a%2 == 0){
+			s.push('0');
+		}else{
+			s.push('1');
+		}
+		a = a/2;
+		if(a == 0)
+			break;
+	}
+	
+	while(!s.empty()){
+		r += s.top();
+		s.pop();
+	}
+	
+	return r;
+}
+
+
+int dfs(string prev, int cnt){
+	if(cnt > ac)
+		return 1e8;
+		
+	int pos = change(prev);
+	
+	if(pos == goal)
+		return 0;
+		
+	if(dp[pos] == 1e9){
+		int ret = 1e9;
+		
+		if(pos>0){
+			ret = 1 + dfs(to_bin(pos-1), cnt+1);
+			dp[pos] = ret < dp[pos] ? ret : dp[pos];
+		}
+		
+		ret = 1 + dfs(to_bin(pos+1), cnt+1);
+		dp[pos] = ret < dp[pos] ? ret : dp[pos];
+		
+		
+		int len = prev.size();
+		for(int i=1; i<len; i++){
+			if(prev[i] == '1'){
+				prev[i] = '0';
+				ret = 1 + dfs(prev, cnt + 1);
+				dp[pos] = ret < dp[pos] ? ret : dp[pos];
+				prev[i] = '1';
+			}else{
+				prev[i] = '1';
+				ret = 1 + dfs(prev, cnt + 1);
+				dp[pos] = ret < dp[pos] ? ret : dp[pos];
+				prev[i] = '0';
+			}
+		}
+		
+	}
+	
+	return dp[pos];
+}
+
+int main(){
+	cin >> str;
+	cin >> cmp;
+	
+	start = change(str);
+	goal = change(cmp);
+	ac = abs(goal - start) + 1;
+
+
+	for(int i=0; i < 1<<10; i++){
+		dp[i] = 1e9;
+	}
+	
+	
+	string prev = str;
+	cout << dfs(prev, 0);
+	 
+	 
+	return 0;
+}

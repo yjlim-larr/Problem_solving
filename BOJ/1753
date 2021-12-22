@@ -1,0 +1,73 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+using namespace std;
+
+const int MAX = 2100000000;
+
+int N, M;
+vector<pair<int, int>> v[20001]; // a -> first : second.
+int start;
+int score[20001] = { 0, };
+
+struct cmp {
+	bool operator()(pair<int,int> p1, pair<int,int> p2) {
+		return p1.second > p2.second;
+	}
+};
+
+void dikstra() {
+	priority_queue<pair<int,int>, vector<pair<int,int>>, cmp> q;
+	q.push({ start , 0});
+
+	for (;;) {
+		int size = q.size();
+
+		if (size == 0)
+			break;
+
+		for (int i = 0; i < size; i++) {
+			int prev = q.top().first;
+			int prev_score = q.top().second;
+			q.pop();
+
+			if (score[prev] != MAX) { 
+			}
+			else { //갱신이 안됨.
+				score[prev] = prev_score;
+
+				for (int j = 0; j < v[prev].size(); j++) {
+					q.push({ v[prev][j].first ,score[prev] +v[prev][j].second
+				});
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	cin >> N >> M;
+	cin >> start;
+
+	for (int i = 0; i < M; i++) {
+		int a, b, c;
+
+		cin >> a >> b >> c;
+		v[a].push_back({ b,c });
+	}
+	
+
+	for (int i = 0; i <= N; i++)
+		score[i] = MAX;
+
+	dikstra();
+
+	for (int i = 1; i <= N; i++) {
+		if (score[i] == MAX)
+			cout << "INF\n";
+		else
+			cout << score[i]<<'\n';
+	}
+
+	return 0;
+}

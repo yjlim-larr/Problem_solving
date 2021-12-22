@@ -1,0 +1,72 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+const int MAX = 2100000000;
+
+ll min(ll a, ll b) {
+	if (a < b) return a;
+	return b;
+}
+
+ll N;
+int info[6];
+ll one_count = 0; //1개의 면만
+ll two_count = 0; //2개의 면만
+ll three_count = 0; //3개의 면만
+
+
+int main() {
+	scanf("%lld", &N);
+
+	ll one_min = MAX;
+	int max_num = 0;
+	int total = 0;
+	for (int i = 0; i < 6; i++) {
+		scanf("%d", &info[i]);
+		one_min = min(one_min, info[i]);
+		max_num = max(max_num, info[i]);
+		total += info[i];
+	}// 주사위정보
+
+	if (N == 1) { //예외경우 핸들링.
+		printf("%d", total - max_num);
+		return 0;
+	}
+
+	three_count = 4;
+	two_count = (N - 2) * 4 + (N - 1) * 4;
+	one_count = (N - 2)*(N - 2) * 5 + (N-2) * 4;
+
+	ll two_min = MAX;
+	for (int i = 0; i < 6; i++) {
+		for (int j = i + 1; j < 6; j++) {
+			if (j + i == 5)
+				continue;
+			two_min = min(two_min, info[i] + info[j]);
+		}
+	}
+
+	ll three_min = MAX;
+	for (int i = 0; i < 6; i++) {
+		for (int j = i + 1; j < 6; j++) {
+			for (int k = j + 1; k < 6; k++) {
+				if (j + i == 5 || i + k == 5 || k + j == 5)
+					continue;
+				three_min = min(three_min, info[i] + info[j] + info[k]);
+			}
+		}
+	}
+
+	printf("%lld", one_min*one_count + two_min * two_count + three_min * three_count);
+	return 0;
+}

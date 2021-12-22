@@ -1,0 +1,28 @@
+#include<iostream>
+#include<cstring>
+#define ll long long
+using namespace std;
+
+int info[101];
+int N, K;
+ll dp[10001];
+
+int main() {
+	cin >> N >> K;
+	for (int i = 0; i < N; i++) {
+		cin >> info[i];
+	}
+
+	dp[0] = 1;
+
+	for (int i = 0; i < N; i++) { //동전의 종류.
+		for (int j = 1; j <= K; j++) { //남은 돈.
+			if (j - info[i] >= 0)
+				dp[j] += dp[j - info[i]];
+		}
+	}
+
+	cout << dp[K];
+
+	return 0;
+}

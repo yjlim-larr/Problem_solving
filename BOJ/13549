@@ -1,0 +1,41 @@
+#include<iostream>
+using namespace std;
+
+int N, M;
+int dp[200001];
+
+int main() {
+	cin >> N >> M;
+
+	if (M <= N) {
+		cout << N - M;
+		return 0;
+	}
+
+	int s = 0;
+	for (int i = N; i >= 0; i--) 
+		dp[i] = s++;
+	for (int i = N + 1; i <= 200000; i++) 
+		dp[i] = 1e9;
+	
+
+	for (int i = N + 1; i <= 200000; i++) {
+		dp[i] = dp[i - 1] + 1;
+
+		if (i & 1 == 1) {
+			//홀수
+			int cmp = dp[i / 2] + 2;
+			dp[i] = cmp < dp[i] ? cmp : dp[i];
+			cmp = dp[i / 2 + 1] + 1;
+			dp[i] = cmp < dp[i] ? cmp : dp[i];
+		}
+		else {
+			//짝수
+			int cmp = dp[i / 2];
+			dp[i] = cmp < dp[i] ? cmp : dp[i];
+		}
+	}
+
+	cout << dp[M];
+	return 0;
+}

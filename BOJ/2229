@@ -1,0 +1,39 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int N;
+int info[1001];
+int dp[1001][1001];
+
+int dfs(int start, int prev, int max, int min) {
+	//start ~ PREV까지 팀.
+	if (prev >= N-1) {
+		//끝에 도달.
+		return max - min;
+	}
+
+	if (dp[start][prev] == -1) {
+		//끝
+		dp[start][prev] = max - min + dfs(prev+1, prev+1, info[prev+1], info[prev+1]);
+		//더 추가.
+		max = max < info[prev + 1] ? info[prev + 1] : max;
+		min = min < info[prev + 1] ? min : info[prev + 1];
+		int cmp = dfs(start, prev + 1, max, min);
+		dp[start][prev] = dp[start][prev] < cmp ? cmp : dp[start][prev];
+	}
+
+	return dp[start][prev];
+}
+
+int main() {
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		cin >> info[i];
+	}
+	
+	memset(dp, -1, sizeof(dp));
+	cout << dfs(0, 0, info[0], info[0]);
+
+	return 0;
+}

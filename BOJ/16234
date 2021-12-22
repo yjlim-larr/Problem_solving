@@ -1,0 +1,67 @@
+#include <iostream>
+#define MX 52
+#define ABS(X) ((X) > 0? (X) : -(X))
+using namespace std;
+
+struct PEOPLE {
+	int x, y;
+}q[MX*MX];
+
+int map[MX][MX], check[MX][MX];
+int dx[] = { 0, 0, -1, 1 };
+int dy[] = { -1, 1, 0, 0 };
+int N, L, R, dab;
+
+bool mapcom()
+{
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			if (map[i][j] != check[i][j]) return true;
+	return false;
+}
+
+void bfs(int x, int y)
+{
+	int st, ed, ix, iy, nx, ny, cnt, sum;
+	st = ed = -1;
+	cnt = sum = 0;
+	q[++st].x = x; q[st].y = y; cnt++; sum += map[y][x], check[y][x] = 1;
+	while (st != ed)
+	{
+		ix = q[++ed].x; iy = q[ed].y;
+		for (int i = 0; i < 4; i++)
+		{
+			nx = ix + dx[i]; ny = iy + dy[i];
+			if (nx < 0 || ny < 0 || nx >= N || ny >= N || check[ny][nx]) continue;
+			if (!(L <= ABS(map[iy][ix] - map[ny][nx]) && ABS(map[iy][ix] - map[ny][nx]) <= R)) continue;
+			q[++st].x = nx; q[st].y = ny; sum += map[ny][nx]; cnt++; check[ny][nx] = 1;
+		}
+	}
+	for (int i = 0; i <= ed; i++)
+		check[q[i].y][q[i].x] = sum / cnt;
+}
+
+int main(void)
+{
+	cin >> N >> L >> R;
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			cin >> map[i][j];
+	while (1)
+	{
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				if (!check[i][j])
+					bfs(j, i);
+		if (mapcom()) dab++;
+		else break;
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+			{
+				map[i][j] = check[i][j];
+				check[i][j] = 0;
+			}
+	}
+	cout << dab << endl;
+	return 0;
+}

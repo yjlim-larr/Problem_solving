@@ -1,0 +1,78 @@
+#include<iostream>
+#include<cstring>
+#define ull unsigned long long
+using namespace std;
+
+char str[100];
+ull N;
+int a_info[100];
+int a_len=1;
+int b_info[100];
+int b_len=1;
+int bi[100];
+
+int main() {
+	cin >> str;
+	cin >> N;
+	int len = strlen(str);
+	a_info[0] = -1;
+	b_info[0] = -1;
+	for (int i = 0; i < len; i++) {
+		if(str[i] == '1')
+			a_info[a_len++] = i;
+		else if(str[i] == '2')
+			b_info[b_len++] = i;
+		if (str[i] == '6') {
+			str[i] = '1';
+			a_info[a_len++] = i;
+		}
+		else if (str[i] == '7') {
+			str[i] = '2';
+			b_info[b_len++] = i;
+		}
+	}
+	//start을 만듬.
+	
+	//K을 이진수로 바꾸자.
+	int bi_len = 0;
+	N -= 1;
+	for (int i = 0;; i++) {
+		if (N > 0) {
+			bi[i] = N % 2;
+			N /= 2;
+		}
+		else {
+			bi_len = i;
+			break;
+		}
+	}
+
+	if (a_len + b_len - 2 < bi_len) {
+		cout << -1;
+		return 0;
+	}
+
+	int a_prev = a_len-1;
+	int b_prev = b_len-1;
+	for (int i = 0; i<bi_len; i++) {
+		if (bi[i] == 0) {
+			//바꾸지 않는다.
+			if (a_info[a_prev] > b_info[b_prev]) {
+				a_prev--;
+			}
+			else
+				b_prev--;
+		}
+		else {
+			// bi[i] ==1
+			if (a_info[a_prev] > b_info[b_prev]) {
+				str[a_info[a_prev--]] = '6';
+			}
+			else
+				str[b_info[b_prev--]] = '7';
+		}
+	}
+
+	cout << str;
+	return 0;
+}

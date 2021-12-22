@@ -1,0 +1,51 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int T, M;
+int dp[1001][31][2]; //시간, 이동횟수, 나무.
+int info[1001];
+
+int max(int a, int b) {
+	return a < b ? b : a;
+}
+
+int dfs(int prev, int cnt, int num) {
+	if (cnt > M)
+		return -1; //불가능.
+
+	if (prev == T) { //끝.
+		return 0;
+	}
+
+
+	if (dp[prev][cnt][num] == -1) {
+		dp[prev][cnt][num] = 0;
+
+		if (info[prev] == num)
+			dp[prev][cnt][num] += 1;
+		
+		int ret = 0;
+		//그대로
+		ret = max(ret, dfs(prev + 1, cnt, num));
+		//이동.
+		int check = dfs(prev, cnt + 1, 3-num);
+		if (check != -1)
+			ret = max(ret, check);
+
+		dp[prev][cnt][num] += ret;
+	}
+
+	return dp[prev][cnt][num];
+}
+
+int main() {
+	cin >> T >> M;
+
+	for (int i = 0; i < T; i++) {
+		cin >> info[i];
+	}
+	memset(dp, -1, sizeof(dp));
+	printf("%d", max(dfs(0, 0, 1), dfs(0,1,2)));
+	return 0;
+}

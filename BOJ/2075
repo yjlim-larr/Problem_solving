@@ -1,0 +1,38 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+using namespace std;
+
+int N;
+priority_queue<int, vector<int>, greater<int>> pq;
+
+int main() {
+	cin >> N;
+	/*
+	1500 개의 공간 -> 1500개의 큰수들을 담음 그리고 갱신이 이루어짐
+	1501~ 제일 작은 값과 비교하여 넣을 지 말지를 정함. 
+	최소 힙 이용
+	*/
+
+	for (int i = 0; i < N; i++) {
+		int a;
+		scanf("%d", &a);
+		pq.push(a);
+	}
+
+	for (int i = 1; i < N; i++) {
+		// 제일 작은 값과 비교. 크면 넣음.
+		for (int j = 0; j < N; j++) {
+			int a;
+			scanf("%d", &a);
+			if (pq.top() > a) {}
+			else {
+				pq.pop();
+				pq.push(a);
+			}
+		}
+	}
+
+	cout << pq.top();
+	return 0;
+}

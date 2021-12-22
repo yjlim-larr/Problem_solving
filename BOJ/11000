@@ -1,0 +1,66 @@
+#include<iostream>
+#include<cstdio>
+#include<utility>
+#include<queue>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+
+struct comp{
+	bool operator()(pair<int,int> &s1, pair<int,int> &s2){
+		return s1.second > s2.second;
+	}
+};
+
+
+int N;
+pair<int,int> p[200001];
+priority_queue<pair<int,int>, vector<pair<int,int>>, comp> pq;
+
+
+bool compare(pair<int,int> p1, pair<int,int> p2){
+    if(p1.first == p2.first)
+        return p1.second > p2.second;
+	return p1.first < p2.first;
+}
+
+
+int main(){
+	ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+	cin >> N;
+	for(int i = 0; i<N; i++){
+		int a, b;
+		cin >> a >> b;
+		p[i].first = a;
+		p[i].second = b;
+	}
+	
+	sort(p, p+N, compare);
+	
+	pair<int,int> state;
+	state.first =1;
+	state.second = 1;
+	pq.push(state);
+	
+	for(int i=0; i<N; i++){
+		pair<int,int> state = pq.top();
+		pq.pop();
+		
+		pair<int,int> next;
+		next.first = p[i].first;
+		next.second = p[i].second;
+		
+		if(p[i].first >= state.second){
+			//담을수 있음
+			pq.push(next);
+		}else{
+			pq.push(state);
+			pq.push(next);
+		}
+	}
+	
+	cout << pq.size();
+	
+	return 0;
+}

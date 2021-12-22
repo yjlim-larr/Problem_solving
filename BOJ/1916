@@ -1,0 +1,71 @@
+#include <iostream>
+#include<vector>
+using namespace std;
+ 
+typedef long long ll;
+ 
+struct state{
+	int prev;
+	int next;
+	ll w;
+};
+ 
+int N, M;
+int start, goal;
+vector<struct state> v;
+ll info[1001];
+ll p_info[1001][1001] = {0,};
+ 
+ 
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+	cin >> N;
+	cin >> M;
+    
+    for(int i=1; i<=N; i++){
+        for(int j=1; j<=N; j++){
+            p_info[i][j] = 1e11;
+        }
+    }
+ 
+	for(int i=0; i<M; i++){
+		int a, b;
+		ll c;
+		cin >> a >> b >>c;
+        
+        p_info[a][b] = p_info[a][b] < c ? p_info[a][b] : c;
+	}
+
+    
+    for(int i=1; i<=N; i++){
+        for(int j=1; j<=N; j++){
+            if(p_info[i][j] != 1e11){
+                struct state s;
+                s.prev = i;
+                s.next = j;
+                s.w = p_info[i][j];
+                v.push_back(s);
+            }
+        }
+    }
+    
+	for(int i=1; i<=N; i++){
+		info[i]=1e11;
+	}
+ 
+	cin >> start >> goal;
+	info[start] = 0;
+ 
+	for(int i=0; i<N-1; i++){
+		int size = v.size();
+ 
+		for(int j=0; j<size; j++){
+			ll cnt = info[v[j].prev] + v[j].w;
+			info[v[j].next] = info[v[j].next] < cnt ? info[v[j].next] : cnt; 
+		}
+	}
+ 
+	cout << info[goal];
+ 
+	return 0;
+}

@@ -1,0 +1,74 @@
+#include<iostream>
+#include<string>
+#include<cstring>
+using namespace std;
+
+
+pair<int, string> dp[1001][1001];
+string str;
+string cmp;
+int str_len, cmp_len;
+
+
+pair<int, string> dfs(int prev_i, int prev_j) {
+	pair<int, string> ret;
+	ret.first = 0;
+	ret.second = "";
+
+	if (prev_i >= str_len && prev_j >= cmp_len) 
+		return ret;
+	
+	if (dp[prev_i][prev_j].first == -1) {
+		pair<int, string> p;
+		dp[prev_i][prev_j].first = 0;
+		dp[prev_i][prev_j].second = "";
+
+		if (str[prev_i] == cmp[prev_j]) {
+			p = dfs(prev_i + 1, prev_j + 1);
+			dp[prev_i][prev_j].second = str[prev_i] + p.second;
+			dp[prev_i][prev_j].first = 1 + p.first;
+		}
+
+		if (prev_i < str_len) {
+			p = dfs(prev_i + 1, prev_j);
+
+			if (dp[prev_i][prev_j].first < p.first) {
+				dp[prev_i][prev_j].first = p.first;
+				dp[prev_i][prev_j].second = p.second;
+			}
+		}
+
+		if (prev_j < cmp_len) {
+			p = dfs(prev_i, prev_j + 1);
+
+			if (dp[prev_i][prev_j].first < p.first) {
+				dp[prev_i][prev_j].first = p.first;
+				dp[prev_i][prev_j].second = p.second;
+			}
+		}
+	}
+
+	return dp[prev_i][prev_j];
+}
+
+int main() {
+	cin >> str;
+	getchar();
+	cin >> cmp;
+
+	str_len = str.length();
+	cmp_len = cmp.length();
+	
+	for (int i = 0; i < str_len; i++) {
+		for (int j = 0; j < cmp_len; j++) {
+			dp[i][j].first = -1;
+			dp[i][j].second = "";
+		}
+	}
+	
+	pair<int, string> ret = dfs(0, 0);
+	cout << ret.first << '\n';
+	cout << ret.second;
+
+	return 0;
+}

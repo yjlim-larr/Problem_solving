@@ -1,0 +1,42 @@
+#include<iostream>
+#include<cstring>
+//#pragma warning(disable:4996)
+using namespace std;
+
+
+const int INF = 210000000;
+int N, M; 
+int a, b;
+int info[21];
+int dp[21][21][21];
+
+int dfs(int prev, int n, int m) {
+	if (prev >= M)
+		return 0;
+
+	if (dp[prev][n][m] == -1) {
+		dp[prev][n][m] = 0;
+
+		int cmp1 = dfs(prev + 1, info[prev], m) + abs(info[prev] - n);
+		int cmp2 = dfs(prev + 1, n, info[prev]) + abs(info[prev] - m);
+		dp[prev][n][m] = cmp1 < cmp2 ? cmp1 : cmp2;
+	}
+
+	return dp[prev][n][m];
+}
+
+int main(){
+	//freopen("input.txt", "r", stdin);
+	cin >> N;
+	cin >> a >> b;
+	cin >> M;
+
+	for (int i = 0; i < M; i++) {
+		cin >> info[i];
+	}
+	
+	memset(dp, -1, sizeof(dp));
+	cout << dfs(0, a, b);
+
+	return 0;
+}

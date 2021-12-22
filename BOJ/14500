@@ -1,0 +1,120 @@
+#include<iostream>
+#include<cstring>
+//#pragma warning(disable:4996)
+using namespace std;
+
+int N, M;
+int map[501][501];
+int dx[5][3] = {
+	{0,0,0}, {0,1,1}, {1,2,2}, {1,1,2}, {1,2,1}
+};
+int dy[5][3] = {
+	{1,2,3}, {1,0,1}, {0,0,1}, {0,1,1}, {0,0,1}
+};
+
+void rotate() {
+	int pre[501][501];
+
+	for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= M; j++)
+			pre[M + 1 - j][i] = map[i][j];
+
+	for(int i=1; i<=M; i++)
+		for(int j=1; j<=N; j++)
+			map[i][j] = pre[i][j];
+}
+
+void reverse() {
+	int pre[501][501];
+	for (int i = 1; i <= N; i++) 
+		for (int j = 1; j <= M; j++) 
+			pre[i][j] = map[i][j];
+
+	for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= M; j++)
+			map[i][j] = pre[i][M + 1- j];
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M;
+	for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= M; j++)
+			cin >> map[i][j];
+
+	int ret = 0;
+	for (int h = 0; h < 4; h++) { //4번회전.
+		for (int j = 1; j <= N; j++) { //x
+			for (int k = 1; k <= M; k++) { //y
+				for (int i = 0; i < 5; i++) { //도형.
+					bool check = 0;
+
+					for (int g = 0; g < 3; g++) { //도형
+						int n_j = j + dx[i][g];
+						int n_k = k + dy[i][g];
+
+						if (n_j < 1 || n_j > N || n_k < 1 || n_k > M) {
+							check = 1;
+							break;
+						}
+					}
+
+					int total = map[j][k];
+					if (check == 0) {
+						for (int g = 0; g < 3; g++) { //도형
+							int n_j = j + dx[i][g];
+							int n_k = k + dy[i][g];
+							total += map[n_j][n_k];
+						}
+						ret = ret < total ? total : ret;
+					}
+				}
+			}
+		}
+
+		rotate();
+		int swap = N;
+		N = M;
+		M = swap;
+	}
+
+	reverse();
+
+	for (int h = 0; h < 4; h++) { //4번회전.
+		for (int j = 1; j <= N; j++) { //x
+			for (int k = 1; k <= M; k++) { //y
+				for (int i = 0; i < 5; i++) { //도형.
+					bool check = 0;
+
+					for (int g = 0; g < 3; g++) { //도형
+						int n_j = j + dx[i][g];
+						int n_k = k + dy[i][g];
+
+						if (n_j < 1 || n_j > N || n_k < 1 || n_k > M) {
+							check = 1;
+							break;
+						}
+					}
+
+					int total = map[j][k];
+					if (check == 0) {
+						for (int g = 0; g < 3; g++) { //도형
+							int n_j = j + dx[i][g];
+							int n_k = k + dy[i][g];
+							total += map[n_j][n_k];
+						}
+						ret = ret < total ? total : ret;
+					}
+				}
+			}
+		}
+
+		rotate();
+		int swap = N;
+		N = M;
+		M = swap;
+	}
+
+	cout << ret;
+	return 0;
+}

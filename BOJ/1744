@@ -1,0 +1,46 @@
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+
+int N;
+int info[10001];
+int dp[10001];
+
+bool compare(int a, int b) {
+	return a > b;
+}
+
+int solve(int prev) {
+	if (prev >= N) {
+		return 0;
+	}
+
+	if (dp[prev] == -1) {
+		dp[prev] = 0;
+
+		dp[prev] += solve(prev + 1) + info[prev];
+		if (prev + 1 < N) {
+			int ret = solve(prev + 2) + info[prev] + info[prev + 1];
+			dp[prev] = dp[prev] < ret ? ret : dp[prev];
+
+			ret = solve(prev + 2) + info[prev] * info[prev + 1];
+			dp[prev] = dp[prev] < ret ? ret : dp[prev];
+		}
+	}
+
+	return dp[prev];
+}
+
+int main() {
+	cin >> N;
+	for (int i = 0; i < N; i++)
+		cin >> info[i];
+
+	sort(info, info + N, compare);
+	//그냥 더하는게 클까> 묶는게 클까?
+	memset(dp, -1, sizeof(dp));
+
+	cout << solve(0);
+	return 0;
+}

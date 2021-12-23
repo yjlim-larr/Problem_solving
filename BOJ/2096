@@ -1,0 +1,54 @@
+#include "stdio.h"
+#define MAXN 100002
+
+int N;
+int data[3] = { 0, };
+int dp[6] = { 0, };
+
+int min0 = 0;
+int min1 = 0;
+int min2 = 0;
+int max0 = 0;
+int max1 = 0;
+int max2 = 0;
+
+int min(int a, int b) {
+	if (a < b) return a;
+	return b;
+}
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
+}
+
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++) {
+		scanf("%d %d %d", &data[0], &data[1], &data[2]);
+		min0 = min(dp[0], dp[1]) + data[0];
+		max0 = max(dp[3], dp[4]) + data[0];
+		min1 = min(min(dp[0], dp[1]), dp[2]) + data[1];
+		max1 = max(max(dp[3], dp[4]), dp[5]) + data[1];
+		min2 = min(dp[1], dp[2]) + data[2];
+		max2 = max(dp[4], dp[5]) + data[2];
+
+		dp[0] = min0;
+		dp[3] = max0;
+		dp[1] = min1;
+		dp[4] = max1;
+		dp[2] = min2;
+		dp[5] = max2;
+	}
+
+	int m = 9000000, M = -1;
+	for (int i = 0; i < 3; i++) {
+		m = min(m, dp[i]);
+		M = max(M, dp[i + 3]);
+	}
+
+	printf("%d %d", M, m);
+
+	return 0;
+}

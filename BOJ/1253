@@ -1,0 +1,48 @@
+#include <iostream>
+#include<utility>
+#include<algorithm>
+using namespace std;
+
+typedef long long ll;
+
+int N;
+ll info[2001];
+
+int main() {
+	cin >> N;
+	for(int i=0; i<N; i++){
+		cin >> info[i];
+	}
+	
+	sort(info, info+N, less<ll>());
+	
+	
+	ll total = 0;
+	for(int i=0; i<N; i++){
+		bool check = 0;
+		
+		for(int j=0; j<N-1; j++){
+			ll find = info[i] - info[j];
+			
+			int idx = lower_bound(info+j+1, info+N, find) - info;
+			int goal = upper_bound(info+j+1, info+N, find) - info;
+			
+			for(int k=idx; k<goal; k++){
+				if(j != i && k != i){
+					if(info[j] + info[k] == info[i]){
+						total++;
+						check = 1;
+						break;
+					}
+				}
+			}
+			
+			if(check==1)
+				break;
+		}
+	}
+	
+	cout << total;
+	
+	return 0;
+}

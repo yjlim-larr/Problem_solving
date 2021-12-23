@@ -1,0 +1,42 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+const int n_ = 100001;
+const int INF = 210000000;
+int N, S;
+int info[n_];
+int sum[n_];
+
+int main() {
+	cin >> N >> S;
+	for (int i = 1; i <= N; i++) {
+		cin >> info[i];
+		sum[i] = sum[i - 1] + info[i];
+	}
+
+	int ret = INF;
+	for (int i = 1; i <= N; i++) {
+		int left = i;
+		int right = N;
+		
+		while (left <= right) {
+			int mid = (left + right) / 2;
+			
+			int num = sum[mid] - sum[i - 1];
+			int len = mid - i + 1;
+			if (num >= S) {
+				ret = ret < len ? ret : len;
+				right = mid - 1;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+	}
+
+	if (ret >= INF)
+		ret = 0;
+	cout << ret;
+	return 0;
+}

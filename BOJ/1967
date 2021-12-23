@@ -1,0 +1,78 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#define ull unsigned long long
+using namespace std;
+
+int min(int a, int b) {
+	if (a < b)
+		return a;
+	return b;
+}
+
+int max(int a, int b) {
+	if (a > b)
+		return a;
+	return b;
+}
+
+int N;
+vector<pair<int, int>> v[10001];
+int dp[10001] = { 0, }; //최대 지름을 담는다.
+int check[10001] = { 0, };
+int check_count = 0;
+bool visit_table[10001] = { 0, };
+
+int dfs(int prev, int weight) {
+	int check = 0;
+	int ret = dp[prev];
+	if (ret == -1) {
+		ret = 0;
+		for (vector<pair<int, int>>::iterator iterpos = v[prev].begin(); iterpos < v[prev].end(); iterpos++) {
+			if (visit_table[(*iterpos).first] != 1) {
+				visit_table[(*iterpos).first] = 1;
+				ret = max(ret, dfs((*iterpos).first, weight + (*iterpos).second));
+				check = 1;
+			}
+		}
+		dp[prev] = ret;
+		if (check == 0)
+			return weight;
+	}
+	return ret;
+}
+
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N-1; i++) {
+		int a, b, c;
+		scanf("%d %d %d", &a, &b, &c);
+		pair<int, int> p;
+		p.first = b; //end
+		p.second = c; //weight
+		v[a].push_back(p);
+		p.first = a;
+		v[b].push_back(p);
+	}
+
+	for (int i = 1; i <= N; i++)
+		if (v[i].size() == 1)
+			check[check_count++] = i;
+
+	memset(dp, -1, sizeof(dp));
+	int d_max = 0;
+	for (int i = 0; i < check_count; i++) {
+		visit_table[check[i]] = 1;
+		d_max = max(d_max, dfs(check[i],0));
+		memset(visit_table, 0, sizeof(visit_table));
+		memset(dp, -1, sizeof(dp));
+	}
+	printf("%d", d_max);
+	return 0;
+}

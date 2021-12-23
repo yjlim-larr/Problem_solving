@@ -1,0 +1,47 @@
+#include<iostream>
+#include<string>
+#include<algorithm>
+//#pragma warning(disable:4996)
+#define ll long long
+using namespace std;
+
+const int n_ = 33;
+
+int N;
+string str[n_];
+int info[n_];
+
+bool compare(int a, int b) {
+	return a > b;
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N;
+
+	for (int i = 0; i < N; i++) {
+		getchar();
+		cin >> str[i];
+	}
+
+	for (int i = 0; i < N; i++) {
+		int len = str[i].length();
+		int c = 1;
+
+		for (int j = 0; j < len; j++) {
+			int s = (str[i][len - 1 - j] - 'A');
+
+			info[s] += c;
+			c *= 10;
+		}
+	}
+
+	sort(info, info + n_, compare);
+	int total = 0;
+	for (int i = 0; i < 10; i++) {
+		total += (info[i] * (9 - i));
+	}
+
+	cout << total;
+	return 0;
+}

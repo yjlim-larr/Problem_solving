@@ -1,0 +1,72 @@
+#include<cstdio>
+#include<vector>
+#include<cmath>
+#include<queue>
+#define ll long long
+using namespace std;
+
+const int MAX = 2100000000;
+
+int N, M;
+int a, b; //반드시 지나야하는 정점.
+vector<pair<int, int>> v[801];
+ll table[801][2];
+
+void dikstra(int prev, int check) {
+	queue<pair<int,ll>> q;
+	q.push({prev, 0});
+
+	for (;;) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			int prev_node = q.front().first;
+			ll prev_weight = q.front().second;
+			q.pop();
+
+			for (int j = 0; j < v[prev_node].size(); j++) {
+				if (table[v[prev_node][j].first][check] > prev_weight + v[prev_node][j].second) {
+					table[v[prev_node][j].first][check] = prev_weight + (ll)v[prev_node][j].second;
+					q.push({v[prev_node][j].first, table[v[prev_node][j].first][check] });
+				}
+			}
+		}
+	}
+}
+
+// 시작 -> a -> b -> 도착
+// 시작 -> b -> a -> 도착
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < M; i++) {
+		int start, end, weight;
+		scanf("%d %d %d", &start, &end, &weight);
+		v[start].push_back({ end, weight });
+		v[end].push_back({ start, weight });
+	}
+
+	for (int i = 1; i <= 800; i++) {
+		table[i][0] = MAX;
+		table[i][1] = MAX;
+	}
+
+	scanf("%d %d", &a, &b);
+
+	table[a][0] = 0;
+	dikstra(a,0); //a에서 모든 노드로 가는 최단경로
+
+	table[b][1] = 0;
+	dikstra(b,1); //b에서 모든 노드로 가는 최단경로
+
+	ll len = (ll)table[1][0] + (ll)table[N][1] + (ll)table[b][0];
+	len = min(len, (ll)table[N][0] + (ll)table[1][1] + (ll)table[b][0]);
+
+	if (len >= 2100000000) //갱신 안된 값이 존재한다.
+		printf("-1");
+	else
+		printf("%lld", len);
+
+	return 0;
+}

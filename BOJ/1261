@@ -1,0 +1,101 @@
+#include<iostream>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+const int MAX = 21000000;
+
+struct state {
+	int prev_i;
+	int prev_j;
+	int count;
+};
+
+int N, M;
+int dx[8] = { 1,-1,0,0,1,-1,1,-1 };
+int dy[8] = { 0,0,1,-1,1,1,-1,-1 };
+bool map[101][101] = { 0, };
+int min_num = MAX;
+
+
+int main() {
+	cin >> N >> M; //M이 세로 N이 가로
+
+	for (int i = 1; i <= M; i++) {
+		getchar();
+		char str[101];
+		cin >> str;
+		for (int j = 1; j <= N; j++) {
+			if (str[j - 1] == '0')
+				map[i][j] = 0;
+			else
+				map[i][j] = 1;
+		}
+	}
+
+	queue<struct state> q;
+	struct state s;
+	s.prev_i = 1;
+	s.prev_j = 1;
+	s.count = 0; //벽을 부순 횟수.
+	q.push(s);
+
+	int visit_table[101][101];
+	for (int i = 1; i <= M; i++)
+		for (int j = 1; j <= N; j++)
+				visit_table[i][j] = MAX; //방문 한적이 없다.
+
+	for (;;) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			struct state prev = q.front();
+			q.pop();
+
+			if (prev.prev_i == M && prev.prev_j == N) { // 끝에 도달.
+				min_num = min(prev.count, min_num);
+				continue;
+			}
+
+			for (int j = 0; j < 4; j++) {//4방향 이동.
+				if (1 <= prev.prev_i + dx[j] && prev.prev_i + dx[j] <= M
+					&& 1 <= prev.prev_j + dy[j] && prev.prev_j + dy[j] <= N){
+			
+					struct state next;
+					next.prev_i = prev.prev_i + dx[j];
+					next.prev_j = prev.prev_j + dy[j];
+
+					if (map[prev.prev_i + dx[j]][prev.prev_j + dy[j]] == 1){
+						if (visit_table[prev.prev_i + dx[j]][prev.prev_j + dy[j]] > prev.count + 1) {
+							visit_table[prev.prev_i + dx[j]][prev.prev_j + dy[j]] = prev.count + 1;
+							//이동하려는 곳이 벽이다. 
+							next.count = prev.count + 1;
+							q.push(next);
+						}
+					}
+					else {
+						if (visit_table[prev.prev_i + dx[j]][prev.prev_j + dy[j]] > prev.count) {
+							visit_table[prev.prev_i + dx[j]][prev.prev_j + dy[j]] = prev.count;
+							next.count = prev.count;
+							q.push(next);
+						}
+					}
+
+				}
+			}
+
+		}
+
+	}
+
+	cout << min_num;
+
+	return 0;
+}

@@ -1,0 +1,73 @@
+#include<cstdio>
+#include<cstring>
+
+int N, K;
+bool table[51][26];
+int max_num = 0;
+bool visit_table[26];
+
+void dfs(int prev, int cnt) {
+	if (prev < 26 && cnt < K){
+		dfs(prev + 1, cnt); //안배운다.
+
+		if (visit_table[prev] != 1) {
+			visit_table[prev] = 1;
+			dfs(prev + 1, cnt + 1);
+			visit_table[prev] = 0;
+		}
+	}
+	else if(cnt == K){ //무조건 꽉 차게 배워야 좋다.
+		//check
+		int w_cnt = 0;
+
+		for (int i = 0; i < N; i++) {
+			int check = 1;
+
+			for (int j = 0; j < 26; j++) {
+				if (table[i][j] == 1) {
+					if (visit_table[j] == 1)
+						continue;
+					else {
+						check = 0;
+						break;
+					}
+				}
+			}
+
+			w_cnt += check;
+		}
+
+		max_num = w_cnt > max_num ? w_cnt : max_num;
+	}
+}
+
+int main(){
+	char str[100];
+	visit_table[0] = 1;
+	visit_table[2] = 1;
+	visit_table[8] = 1;
+	visit_table[13] = 1;
+	visit_table[19] = 1;
+
+	scanf("%d %d", &N, &K);
+	if (K < 5) {
+		printf("%d");
+		return 0;
+	}
+
+	K -= 5;
+	for (int i = 0; i < N; i++) {
+		getchar();
+		scanf("%s", str);
+
+		int len = strlen(str);
+		for (int j = 4; j < len - 4; j++) {
+			table[i][str[j] - 'a'] = 1;
+		}
+	}
+
+	dfs(0, 0);
+	printf("%d", max_num);
+
+	return 0;
+}

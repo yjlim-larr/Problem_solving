@@ -1,0 +1,83 @@
+//최대 중량. 최소중량 -> right, left -> mid
+//조사해서 mid 가능하면 start = mid-1
+//조사해서 불가능하면 end = start -1
+// O(NlogN) 풀이.
+//logN은 mid 선택. N은 경로탐색.
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ull unsigned long long
+using namespace std;
+
+int N, M;
+vector<pair<int, int>> v[10001];
+pair<int, int> p;
+int visit_table[10001] = { 0, };
+
+bool BFS(int start, int end, int weight) {
+	queue<int> q;
+	int check = 0;
+	q.push(start);
+	while (1) {
+		int size = q.size();
+		if (!size)
+			break;
+		for (int i = 0; i < size; i++) {
+			int prev = q.front();
+			q.pop();
+			if (prev == end) {
+				check = 1;
+				break;
+			}
+			for (int i = 0; i < v[prev].size(); i++) {
+				if (weight <= v[prev][i].second && visit_table[v[prev][i].first] == 0) {
+					visit_table[v[prev][i].first] = 1;
+					q.push(v[prev][i].first);
+				}
+			}
+		}
+		if (check == 1)
+			break;
+	}
+	return check;
+}
+
+
+int main() {
+	int start, end;
+	int max_weight = 0;
+	int min_weight = 1000000000;
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < M; i++) {
+		int a, b, c;
+		scanf("%d %d %d", &a, &b, &c);
+		v[a].push_back({ b,c });
+		v[b].push_back({ a,c });
+		max_weight = max(max_weight, c);
+		min_weight = min(min_weight, c);
+	}
+	scanf("%d %d", &start, &end);
+
+	int sol = 0;
+	int left = min_weight;
+	int right = max_weight;
+	while (left <= right) {
+		memset(visit_table, 0, sizeof(visit_table));
+		visit_table[start] = 1;
+		int mid = (left + right) / 2;
+		if (BFS(start, end, mid)) {
+			left = mid + 1;
+			sol = mid;
+		}
+		else
+			right = mid - 1;
+	}
+	printf("%d", sol);
+	return 0;
+}

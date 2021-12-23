@@ -1,0 +1,99 @@
+#include<cstdio>
+#include<iostream>
+#include<queue>
+using namespace std;
+
+const int n_ = 201;
+const int INF = 2100000000;
+
+struct state {
+	int i;
+	int j;
+	int cnt;
+};
+
+int K, N, M;
+int map[n_][n_];
+int dx[4] = { 1,-1,0,0 };
+int dy[4] = { 0,0, 1, -1 };
+int ddx[8] = { 1,1,-1,-1,2,2,-2,-2 };
+int ddy[8] = { 2,-2,2,-2, 1,-1,1,-1 };
+bool table[n_][n_][31];
+
+int min_cnt = INF;
+
+int main() {
+	scanf("%d", &K);
+	scanf("%d %d", &M, &N);
+
+	for (int i = 1; i <= N; i++) 
+		for (int j = 1; j <= M; j++) 
+			scanf("%d", &map[i][j]);
+	
+	struct state s;
+	s.i = 1;
+	s.j = 1;
+	s.cnt = 0;
+	table[1][1][0] = 1;
+
+	queue<struct state> q;
+	q.push(s);
+
+	for (int level=0;;level++) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++)
+		{
+			struct state prev = q.front();
+			q.pop();
+
+			if (prev.i == N && prev.j == M) {
+				printf("%d", level);
+				return 0;
+			}
+
+			for (int j = 0; j < 4; j++) {
+				int n_i = prev.i + dx[j];
+				int n_j = prev.j + dy[j];
+
+				if (n_i < 1 || n_i > N || n_j < 1 || n_j > M)
+					continue;
+
+				if (map[n_i][n_j] != 1 && table[n_i][n_j][prev.cnt] == 0) {
+					table[n_i][n_j][prev.cnt] = 1;
+
+					struct state n;
+					n.i = n_i;
+					n.j = n_j;
+					n.cnt = prev.cnt;
+					q.push(n);
+				}
+			}
+
+			if (prev.cnt < K) {
+				prev.cnt++;
+				for (int j = 0; j < 8; j++) {
+					int n_i = prev.i + ddx[j];
+					int n_j = prev.j + ddy[j];
+
+					if (n_i < 1 || n_i > N || n_j < 1 || n_j > M)
+						continue;
+
+					if (map[n_i][n_j] != 1 && table[n_i][n_j][prev.cnt] == 0) {
+						table[n_i][n_j][prev.cnt] = 1;
+
+						struct state n;
+						n.i = n_i;
+						n.j = n_j;
+						n.cnt = prev.cnt;
+						q.push(n);
+					}
+				}
+			}
+		}
+	}
+
+	printf("-1");
+	return 0;
+}

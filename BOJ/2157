@@ -1,0 +1,57 @@
+#include <iostream>
+#include<vector>
+#include<utility>
+#include<algorithm>
+using namespace std;
+
+const int n_ = 301;
+
+int N, M, K;
+vector<pair<int,int>> v[n_];
+int dp[301][301]; //prev , 방문 개수
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	
+	cin >> N >> M >> K;
+	for(int i=0; i<=N; i++){
+		for(int j=0; j<=M; j++){
+			dp[i][j] = -1;
+		}
+	}
+	
+	for(int i=0; i<K; i++){
+		int a, b, c;
+		cin >> a >> b >> c;
+		if(a > b)
+			continue;
+		v[a].push_back({b,c});
+	}
+	
+	dp[1][1] = 0;
+	for(int i=1; i<=N; i++){
+		for(int j=1; j<M; j++){
+			if(dp[i][j] == -1)
+				continue;
+			
+			int size = v[i].size();
+			for(int k=0; k<size; k++){
+				int next = v[i][k].first;
+				int cost = v[i][k].second;
+				
+				dp[next][j+1] = dp[i][j] + cost > dp[next][j+1] ? dp[i][j] + cost : dp[next][j+1];
+			}
+		}
+	}
+	
+	int ans = 0;
+	for(int i=1; i<=M; i++){
+		ans = ans < dp[N][i] ? dp[N][i] : ans;
+	}
+	if(ans == -1)
+		ans = 0;
+	cout << ans;
+	return 0;
+}

@@ -1,0 +1,52 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+const int MAX = 2100000000;
+
+int N,M,L;
+int info[102] = { 0, };
+bool table[1001] = { 0, };
+int dis[100] = { 0, };
+
+int main() {
+	scanf("%d %d %d", &N, &M, &L);
+	info[0] = 0;
+	for (int i = 1; i <= N; i++) {
+		scanf("%d", &info[i]);
+		table[info[i]] = 1; //건물이 있다.
+	}
+	info[N+1] = L;
+	sort(info, info + N+1);
+
+	int left = 1;
+	int right = L;
+	int ret = 0;
+	while (left <= right) {
+		int m_count = 0;
+		int mid = (left + right) / 2;
+		for (int i = 0; i <= N; i++) {
+			int dis = info[i + 1] - info[i];
+			if(dis > mid)
+				m_count += (dis - 1) / mid;
+		}
+		if (m_count > M) {
+			left = mid + 1;
+		}
+		else{
+			right = mid - 1;
+			ret = mid;
+		}
+	}
+	printf("%d", ret);
+	return 0;
+}

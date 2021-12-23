@@ -1,0 +1,78 @@
+#include<cstdio>
+#include<cstring>
+#include<utility>
+using namespace std;
+
+int min(int a, int b) {
+	if (a < b)return a;
+	return b;
+}
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
+}
+
+int N,M;
+bool map[1001][1001] = { 0, };
+int dp[1001][1001]; //첫번째인덱스 = 왼쪽위점 x. 두번째 인덱스는 왼쪽위 점 y
+
+int dfs(int prev_i, int prev_j) {
+	if (1 <= prev_i && prev_i <= N && 1 <= prev_j  && prev_j <= M) {}
+	else return 0;
+
+	if (dp[prev_i][prev_j] == -1) {
+		if (map[prev_i][prev_j] == 0)
+			dp[prev_i][prev_j] = 0; //정사각형 만들기 불가능.
+		else {
+			dp[prev_i][prev_j] = 1;
+			//오른쪽 아래로 이동.
+			int a = 0, b = 0;
+			int dis = dfs(prev_i + 1, prev_j + 1);
+
+			for (int i = 1; prev_i + i <= N; i++) {
+				if (map[prev_i + i][prev_j] == 0)
+					break;
+				a++;
+			}
+
+			for (int i = 1; prev_j + i <= M; i++) {
+				if (map[prev_i][prev_j + i] == 0)
+					break;
+				b++;
+			}
+
+			if (a >= dis && b >= dis)
+				dp[prev_i][prev_j] = dis + 1;
+			else
+				dp[prev_i][prev_j] = min(a, b)+1;
+		}
+	}
+
+	return dp[prev_i][prev_j];
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++) {
+		char str[1001];
+		getchar;
+		scanf("%s", str);
+		for (int j = 1; j <= M; j++) {
+			if (str[j - 1] == '0')
+				map[i][j] = 0;
+			else
+				map[i][j] = 1;
+		}
+	}
+
+	memset(dp, -1, sizeof(dp));
+	int len = 0;
+	for (int i = N; i >= 1; i--)
+		for (int j = M; j >= 1; j--)
+			len = max(len, dfs(i, j));
+	
+	printf("%d", len*len);
+	return 0;
+}

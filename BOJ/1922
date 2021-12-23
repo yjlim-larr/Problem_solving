@@ -1,0 +1,76 @@
+#include<cstdio>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+struct edge {
+	int n1;
+	int n2;
+	int weight;
+};
+
+vector<struct edge> v;
+int N, M;
+int p_info[1001] = { 0, };
+
+bool compare(struct edge e1, struct edge e2) {
+	return e1.weight < e2.weight;
+}
+
+bool can_union(int a, int b) { //합칠 수 있는 지 여부를 알려준다.
+	for (;;) {
+		if (p_info[a] == 0)
+			break;
+		else
+			a = p_info[a];
+	}
+
+	for (;;) {
+		if (p_info[b] == 0)
+			break;
+		else
+			b = p_info[b];
+	}
+
+	if (a == b)
+		return 0;
+
+	p_info[b] = a;
+	return 1;
+}
+
+int main() {
+	scanf("%d", &N);
+	scanf("%d", &M);
+
+	int a, b, c;
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+
+		struct edge e;
+		e.n1 = a;
+		e.n2 = b;
+		e.weight = c;
+
+		v.push_back(e);
+	}
+
+	sort(v.begin(), v.end(), compare);
+
+	int total = 0;
+	int cnt = 0;
+	for (int i = 0; i < M; i++) {
+		if (can_union(v[i].n1, v[i].n2))
+		{
+			total += v[i].weight;
+			cnt++;
+			if (cnt == N - 1)
+				break;
+		}
+
+	}
+
+	printf("%d", total);
+
+	return 0;
+}

@@ -1,0 +1,83 @@
+#include<cstdio>
+#include<queue>
+using namespace std;
+
+const int n_ = 1e3 + 1;
+int N, M;
+int map[n_][n_];
+bool table[n_][n_][2];
+
+struct state {
+	int i;
+	int j;
+	int check;
+};
+
+int dx[4] = { 0,0,1,-1 };
+int dy[4] = { 1,-1,0,0 };
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			scanf("%1d", &map[i][j]);
+		}
+	}
+
+	struct state s;
+	s.i = 1;
+	s.j = 1;
+	s.check = 0;
+
+	queue<struct state> q;
+	q.push(s);
+
+	for (int level = 1;;level++) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			struct state prev = q.front();
+			q.pop();
+
+			if (prev.i == N && prev.j == M) {
+				printf("%d", level);
+				return 0;
+			}
+
+			for (int j = 0; j < 4; j++) {
+				int n_i = prev.i + dx[j];
+				int n_j = prev.j + dy[j];
+
+				if (n_i <1 || n_i > N || n_j < 1 || n_j >M) {
+					continue;
+				}
+
+				if (map[n_i][n_j] == 0 && table[n_i][n_j][prev.check] == 0) {
+					table[n_i][n_j][prev.check] = 1;
+
+					struct state next;
+					next.i = n_i;
+					next.j = n_j;
+					next.check = prev.check;
+
+					q.push(next);
+				}
+				else if (map[n_i][n_j] == 1 && prev.check == 0) {
+					table[n_i][n_j][1] = 1;
+
+					struct state next;
+					next.i = n_i;
+					next.j = n_j;
+					next.check = 1;
+
+					q.push(next);
+				}
+			}
+		}
+	}
+
+	printf("-1");
+	return 0;
+}

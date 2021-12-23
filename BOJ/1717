@@ -1,0 +1,81 @@
+#include <cstdio>
+
+const int n_ = 1e6 + 1;
+
+int N, M;
+int p_info[n_]; //부모를 향한다.
+int rank[n_];
+
+void s_union(int a, int b) {
+	int a_r = p_info[a];
+	int b_r = p_info[b];
+
+	for (;;) {
+		if (p_info[a_r] == a_r)
+			break;
+		else
+			a_r = p_info[a_r];
+	}
+
+	for (;;) {
+		if (p_info[b_r] == b_r)
+			break;
+		else
+			b_r = p_info[b_r];
+	}
+
+	if (a_r == b_r)
+		return;
+
+	if (rank[a_r] > rank[b_r]) {
+		int swap = a_r;
+		a_r = b_r;
+		b_r = swap;
+	}
+	p_info[a_r] = b_r;
+
+	if (rank[a_r] == rank[b_r]) rank[b_r]++;
+}
+
+void find(int a, int b) {
+	for (;;) {
+		if (p_info[a] == a)
+			break;
+		else
+			a = p_info[a];
+	}
+
+	for (;;) {
+		if (p_info[b] == b)
+			break;
+		else
+			b = p_info[b];
+	}
+
+	if (a == b)
+		printf("YES\n");
+	else
+		printf("NO\n");
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= N; i++) {
+		p_info[i] = i;
+	}
+
+	int a, b, c;
+	for (int i = 0; i<M; i++) {
+		scanf("%d %d %d", &a, &b, &c);
+
+		if (a == 1) {
+			find(b, c); //같은 집합인지 확인.
+		}
+		else {
+			s_union(b, c);
+		}
+	}
+
+	return 0;
+}

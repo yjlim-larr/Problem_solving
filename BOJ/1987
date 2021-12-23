@@ -1,0 +1,44 @@
+#include<cstdio>
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
+}
+
+int N, M;
+int dx[4] = { 1,-1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+char map[21][21] = { 0, };
+bool visit_table[30] = { 0, };
+bool visit_table_map[21][21] = { 0, };
+int max_count = 1;
+
+void dfs(int start_i, int start_j, int cnt) {
+	char c = map[start_i][start_j];
+	if (visit_table[c - 'A'] == 0 && visit_table_map[start_i][start_j] == 0) {
+		cnt += 1;
+		visit_table_map[start_i][start_j] = 1;
+		visit_table[c - 'A'] = 1;
+		for (int i = 0; i < 4; i++) {
+			if (1 <= start_i + dx[i] && start_i + dx[i] <= N && 1 <= start_j + dy[i] && start_j + dy[i] <= M
+				&& visit_table_map[start_i + dx[i]][start_j+dy[i]] == 0) {
+				dfs(start_i + dx[i], start_j + dy[i], cnt);
+			}
+		}
+		visit_table[c - 'A'] = 0;
+		visit_table_map[start_i][start_j] = 0;
+	}
+	max_count = max(max_count, cnt);
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+	for (int i = 1; i <= N; i++) {
+		getchar();
+		for (int j = 1; j <= M; j++)
+			scanf("%c", &map[i][j]);
+	}
+	dfs(1, 1, 0);
+	printf("%d", max_count);
+	return 0;
+}

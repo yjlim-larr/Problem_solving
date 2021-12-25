@@ -1,0 +1,47 @@
+#include <iostream>
+#include<queue>
+using namespace std;
+typedef unsigned long long ull;
+
+struct compare {
+	bool operator()(ull a, ull b) {
+		return a > b;
+	}
+};
+
+int N, T;
+ull MOD = 1000000007;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	cin >> T;
+	for (int i = 0; i < T; i++) {
+		cin >> N;
+
+		ull ans = 1;
+		priority_queue<ull, vector<ull>, compare> q;
+
+		for (int j = 0; j < N; j++) {
+			ull a;
+			cin >> a;
+			q.push(a);
+		}
+
+		while (q.size() > 1) {
+			ull a = q.top();
+			q.pop();
+			ull b = q.top();
+			q.pop();
+
+			ans = (ans * ((a * b) % MOD)) % MOD;
+			q.push(a * b);
+		}
+		cout << ans << '\n';
+
+	}
+
+	return 0;
+}

@@ -1,0 +1,100 @@
+#include<stack>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#include<cmath>
+#include<cstring>
+#define fst first
+#define snd second
+//#pragma warning(disable:4996)
+using namespace std;
+
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> pii;
+
+const int INF = 2100000000; //
+const int n_ = 101;
+
+int min(int a, int b) { return a > b ? b : a; }
+int max(int a, int b) { return a < b ? b : a; }
+
+struct state {
+	int i;
+	int j;
+	int s; //가로 세로 여부. 가로 == 0 , 세로 == 1.
+	int k = 0;
+	state(int a, int b, int c, int d) : i(a), j(b), s(c), k(d) {};
+};
+
+int N, M;
+int dx[8] = { 1,0,-1,0,1,-1,1,-1 };
+int dy[8] = { 0,1,0,-1,1,1,-1,-1 };
+char map[101][101];
+pair<int, int> point[2];
+bool table[101][101][2]; // 가로로 방문인지 세로로 방문인지.
+queue<struct state> q;
+
+/*
+ 진행하면서 회전 여부를 결정 이전단계에서 언제 이동했는지를 검사.
+
+*/
+
+int main() {
+	int cnt = 0;
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M;
+	for (int i = 1; i <= M; i++) {
+		getchar();
+		for (int j = 1; j <= N; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 'C') {
+				point[cnt].first = i;
+				point[cnt].second = j;
+				cnt++;
+			}
+		}
+	}
+
+	q.push({ point[0].first, point[0].second, 0, 0 });
+	q.push({ point[0].first, point[0].second, 1, 0 });
+	
+	while (!q.empty()) {
+		struct state prev = q.front();
+		q.pop();
+
+		if (prev.i == point[1].first && prev.j == point[1].second) {
+			cout << prev.k;
+			return 0;
+		}
+
+		if (table[prev.i][prev.j][prev.s] == 0)
+			table[prev.i][prev.j][prev.s] = 1;
+		else
+			continue;
+
+		for (int i = 0; i < 4; i++) {
+			if (i % 2 == prev.s) 
+				continue;
+
+			for (int j = 1;; j++) {
+				int n_i = prev.i + dx[i] * j;
+				int n_j = prev.j + dy[i] * j;
+
+				if (n_i < 1 || n_i > M || n_j < 1 || n_j > N || map[n_i][n_j] == '*') 
+					break;
+
+				if(n_i == point[1].first && n_j == point[1].second) {
+					cout << prev.k;
+					return 0;
+				}
+				
+				q.push({ n_i, n_j, 1 - prev.s, prev.k + 1 });
+			}
+		}
+
+	}
+}

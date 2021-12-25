@@ -1,0 +1,46 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int T,N;
+int info[50000];
+int dp[50001][3];
+
+int max(int a, int b) {
+	return a < b ? b : a;
+}
+
+int dfs(int prev, int num) {
+	if (num == 3 || prev == T) { //이미 다 끔.
+		return 0;
+	}
+
+	if (dp[prev][num] == -1) {
+		dp[prev][num] = 0;
+
+		int total = 0;
+		for (int i = prev; i < prev + N && i < T; i++) {
+			total += info[i];
+		}
+
+		dp[prev][num] = dfs(prev + N,num+1) + total;
+		dp[prev][num] = max(dp[prev][num], dfs(prev + 1, num));
+	}
+
+	return dp[prev][num];
+}
+
+int main() {
+	cin >> T;
+
+	for (int i = 0; i < T; i++) {
+		cin >> info[i];
+	}
+
+	cin >> N;
+	memset(dp, -1, sizeof(dp));
+
+	cout << dfs(0, 0);
+
+	return 0;
+}

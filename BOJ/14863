@@ -1,0 +1,61 @@
+#include<stack>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#include<cmath>
+#include<cstring>
+#define fst first
+#define snd second
+//#pragma warning(disable:4996)
+using namespace std;
+
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> pii;
+
+const int INF = 2100000000; //
+const int n_ = 101;
+
+int min(int a, int b) { return a > b ? b : a; }
+int max(int a, int b) { return a < b ? b : a; }
+
+int N, M;
+int dx[8] = { 1,-1,0,0,1,-1,1,-1 };
+int dy[8] = { 0,0,1,-1,1,1,-1,-1 };
+pair<int, int> info[101][2]; //first == 도보, second == 자전거.
+pair<int, int> p_info[101]; // first == 시간 second == 돈.
+int dp[101][100001]; // 구간번호.
+
+
+int dfs(int prev, int ret) {
+	if (prev == N && ret >= 0)
+		return 0;
+	if (ret < 0)
+		return -1 * INF;
+
+	if (dp[prev][ret] == -1) {
+		dp[prev][ret] = -1 * INF;
+
+		
+			int cmp = dfs(prev + 1, ret - info[prev][0].first) + info[prev][0].second;
+			int cmp2 = dfs(prev + 1, ret - info[prev][1].first) + info[prev][1].second;
+			dp[prev][ret] = max(cmp, cmp2);
+		
+	}
+
+	return dp[prev][ret];
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M;
+	for (int i = 0; i < N; i++) 
+		cin >> info[i][0].first >> info[i][0].second >> info[i][1].first >> info[i][1].second;
+	
+	memset(dp, -1, sizeof(dp));
+	cout << dfs(0, M);
+	return 0;
+}

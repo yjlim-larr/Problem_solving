@@ -1,0 +1,202 @@
+#include<iostream>
+#include<queue>
+#include<cstring>
+//#pragma warning(disable:4996)
+using namespace std;
+
+int N, M, T;
+int map[51][51];
+int n_map[51][51];
+vector<pair<int, int>> v;
+int dx[4] = { 1,-1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+queue<pair<int, int>> q;
+bool a = 0;
+pair<int, int> info[2];
+
+void dfs(int n) {
+	if (n == T) {
+		int total = 0;
+
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= M; j++) {
+				if (map[i][j] >= 0) {
+					total += map[i][j];
+				}
+			}
+		}
+
+		cout << total;
+		return;
+	}
+
+	memset(n_map, 0, sizeof(n_map));
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			int cnt = 0;
+
+			if (map[i][j] >= 0) {
+				for (int k = 0; k < 4; k++) {
+					int n_i = i + dx[k];
+					int n_j = j + dy[k];
+
+					if (n_i <1 || n_i > N || n_j < 1 | n_j > M 
+						|| map[n_i][n_j] == -1) {
+						continue;
+					}
+
+					n_map[n_i][n_j] += map[i][j] / 5;
+					cnt++;
+				}
+			}
+
+			n_map[i][j] += map[i][j] - (int)(map[i][j] / 5) * cnt;
+		}
+	}
+
+	int p_i = info[0].first;
+	int p_j = info[0].second;
+	for (int i = 1;; i++) {
+		int n_i = p_i - 1;
+		int n_j = p_j;
+
+		if (n_i <1 || n_i > N || n_j < 1 | n_j > M){
+			break;
+		}
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+	n_map[info[0].first][info[0].second] = -1;
+
+	for (int i = 1;; i++) {
+		int n_i = p_i;
+		int n_j = p_j + 1;
+
+		if (n_i <1 || n_i > N || n_j < 1 | n_j > M) {
+			break;
+		}
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+
+	for (int i = 1;; i++) {
+		if (p_i == info[0].first)
+			break;
+
+		int n_i = p_i + 1;
+		int n_j = p_j;
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+
+	for (int i = 1;; i++) {
+		if (p_j == info[0].second + 1)
+			break;
+
+		int n_i = p_i;
+		int n_j = p_j - 1;
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+	n_map[info[0].first][info[0].second + 1] = 0;
+	//
+
+	p_i = info[1].first;
+	p_j = info[1].second;
+	for (int i = 1;; i++) {
+		int n_i = p_i + 1;
+		int n_j = p_j;
+
+		if (n_i <1 || n_i > N || n_j < 1 | n_j > M) {
+			break;
+		}
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+	n_map[info[1].first][info[1].second] = -1;
+
+	for (int i = 1;; i++) {
+		int n_i = p_i;
+		int n_j = p_j + 1;
+
+		if (n_i <1 || n_i > N || n_j < 1 | n_j > M) {
+			break;
+		}
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+
+	for (int i = 1;; i++) {
+		if (p_i == info[1].first)
+			break;
+
+		int n_i = p_i - 1;
+		int n_j = p_j;
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+
+	for (int i = 1;; i++) {
+		if (p_j == info[1].second + 1)
+			break;
+
+		int n_i = p_i;
+		int n_j = p_j - 1;
+
+		n_map[p_i][p_j] = n_map[n_i][n_j];
+		p_i = n_i;
+		p_j = n_j;
+	}
+	n_map[info[1].first][info[1].second + 1] = 0;
+	//
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			map[i][j] = n_map[i][j];
+		}
+	}
+
+	dfs(n + 1);
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M >> T;
+
+	for (int i = 1; i <= N; i++) {
+		getchar();
+		for (int j = 1; j <= M; j++) {
+			cin >> map[i][j];
+
+			if (map[i][j] != 0) {
+				if (map[i][j] == -1) {
+					info[a].first = i;
+					info[a].second = j;
+					a = 1;
+				}
+				else {
+					v.push_back({ i,j });
+				}
+			}
+		}
+	}
+
+	dfs(0);
+
+	return 0;
+}

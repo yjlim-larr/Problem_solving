@@ -1,0 +1,51 @@
+#include<stdio.h>
+//어차피 불보다 빠름으로 불의 움직임은 고려할필요가 없다. 
+// 여기서 움직임이란 (아래->대각아래->아래...)을 의미한다.
+// 모서리가 2일 때를 이용해서 3일 때를 구할수 있다. 이를 일반적으로 나타내면 n-1을 이용해서 n일때를 구할 수 있다는 의미이다.
+// n=2일 때 문에 도달하는 가짓수(사람 고려 x) 1가지. n=3일 때 = 3가지. n=4일 때 10가지 n=5일 때
+
+int main() {
+	int n;
+	unsigned int num[101] = { 0, };
+	unsigned int total = 0;
+	int i, j, k;
+	int arr[2][101][101] = { 0, }; // 높이는 과거, 현재. 세로는 시작. 가로는 나올수 있는 문의 종류.
+	bool pre = 0;
+	unsigned check = 0;
+
+	scanf("%d", &n);
+	arr[0][1][2] = 2; // n==2일 때 가능한 문의 경우의 수는 1가지.
+	for (i = 3; i <= n; i++) {
+		pre = i % 2;
+		for (j = 1; j < i; j++) {
+			//4가지 상태 검사. 현재가 (a,b)이면, 이전 상태에서 (a-1,b) (a-1, b-1) (a,b-1) (a,b) 이렇게 존재하는지
+			for (k = j + 1; k <= i; k++) {
+				//(j,j+1) ... (j,i) 까지.
+				//(j,k);
+				arr[pre][j][k] = 0;
+				if (arr[!pre][j][k])
+					arr[pre][j][k] = arr[!pre][j][k];
+				if (arr[!pre][j - 1][k]) {
+					arr[pre][j][k] += arr[!pre][j - 1][k];
+				}
+				if (arr[!pre][j][k - 1]) {
+					arr[pre][j][k] += arr[!pre][j][k - 1];
+				}
+				if (arr[!pre][j - 1][k - 1]) {
+					arr[pre][j][k] += arr[!pre][j - 1][k - 1];
+				}
+				arr[pre][j][k] %= 10007;
+			}
+		}
+	}
+
+	for (j = 1; j < n; j++) {
+		for (k = j + 1; k <= n; k++) {
+			total += arr[pre][j][k];
+		}
+	}
+	total = total % 10007;
+
+	printf("%d", total);
+	return 0;
+}

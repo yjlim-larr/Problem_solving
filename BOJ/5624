@@ -1,0 +1,50 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ull unsigned long long
+using namespace std;
+
+int min(int a, int b) {
+	if (a < b)
+		return a;
+	return b;
+}
+
+int max(int a, int b) {
+	if (a > b)
+		return a;
+	return b;
+}
+
+int N;
+int arr[5001] = { 0, };
+bool dp2[400001] = { 0, };
+
+int main() {
+	int count = 0;
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &arr[i]);
+
+		if (i != 0) {
+			for (int j = 0; j < i; j++) {
+				dp2[200000 + arr[i - 1] + arr[j]] = 1;
+			}
+		}
+
+		for (int j = 0; j < i; j++) {
+			if (dp2[arr[i] - arr[j] + 200000] == 1) {
+				count += 1;
+				break;
+			}
+		}
+	}
+	printf("%d", count);
+	return 0;
+}

@@ -1,0 +1,70 @@
+#include<iostream>
+#include<cstring>
+#define ll long long
+using namespace std;
+
+const ll MOD = 1000000003;
+int N, K;
+ll dp[1001][1001]; //지금 위치. 남은 색.
+
+ll dfs_c(int prev, int r_cnt) {
+	if (r_cnt == 0) {
+		if (prev == N) //불가능.
+			return 0;
+		else //가능.
+			return 1;
+	}
+
+	if (prev > N) //불가능.
+		return 0;
+
+	if (dp[prev][r_cnt] == -1) {
+		dp[prev][r_cnt] = 0;
+
+		for (int i = prev + 2; i <= N; i++) {
+			dp[prev][r_cnt] += (dfs_c(i, r_cnt - 1)%MOD);
+			dp[prev][r_cnt] %= MOD;
+		}
+	}
+
+	return dp[prev][r_cnt];
+}
+
+ll dfs(int prev, int r_cnt) {
+	if (r_cnt == 0)
+		return 1;
+
+	if (prev > N)
+		return 0;
+
+	if (dp[prev][r_cnt] == -1) {
+		dp[prev][r_cnt] = 0;
+
+		for (int i = prev + 2; i <= N; i++) {
+			dp[prev][r_cnt] += (dfs(i, r_cnt - 1)%MOD);
+			dp[prev][r_cnt] %= MOD;
+		}
+	}
+
+	return dp[prev][r_cnt];
+}
+
+int main() {
+	cin >> N >> K;
+	memset(dp, -1, sizeof(dp));
+
+	ll ret = 0;
+	ret += dfs_c(1, K - 1) % MOD;
+	ret %= MOD;
+
+	memset(dp, -1, sizeof(dp));
+	for (int i = 2; i <= N; i++) {
+		//start
+		ret += dfs(i, K - 1) % MOD;
+		ret %= MOD;
+	}
+
+	cout << ret;
+
+	return 0;
+}

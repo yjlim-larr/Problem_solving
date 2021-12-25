@@ -1,0 +1,51 @@
+#include <iostream>
+using namespace std;
+
+int N, M;
+int info[101][101] = {0,};
+
+int main() {
+	cin >> N >> M;
+	
+	for(int i=1; i<=N; i++){
+		for(int j=1; j<=N; j++){
+			info[i][j] = 1e8;
+		}
+	}
+	
+	for(int i=0; i<M; i++){
+		int a, b, c;
+		cin >> a >> b >> c;
+		info[a][b] = c < info[a][b] ? c : info[a][b];
+	}
+	
+	for(int i=1; i<=N; i++){
+		info[i][i] = 0;
+	}
+	
+	
+	for(int i=1; i<=N; i++){
+		for(int j=1; j<=N; j++){ //start
+			for(int k=1; k<=N; k++){ //end
+				if(info[j][i] != 1e9 && info[i][k] != 1e9){
+					int ret = info[j][i] + info[i][k];
+					info[j][k] = info[j][k] < ret ? info[j][k] : ret;
+				}
+			}
+		}
+	}
+	
+	for(int i=1; i<=N; i++){
+		for(int j=1; j<=N; j++){
+			if(info[i][j] != 1e8){
+				cout << info[i][j] << ' ';
+			}else{
+				cout << "0" << ' ';
+			}
+		}
+		cout << '\n';
+	}
+	
+	
+	return 0;
+}

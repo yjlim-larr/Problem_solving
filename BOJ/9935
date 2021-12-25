@@ -1,0 +1,83 @@
+#include <iostream>
+#include<cstring>
+#include<deque>
+using namespace std;
+
+deque<int> dq;
+string str, cmp;
+
+
+int main() {
+	getline(cin, str);
+	getline(cin, cmp);
+	
+	int len = str.size();
+	int cmp_size = cmp.size();
+	bool check = 0;
+	
+	for(int i=0; i<len; i++){
+		if(str[i] == cmp[0]){
+			int ans = 0;
+			
+			for(;i<len; i++){
+				if(str[i] == cmp[ans]){
+					ans++;
+					
+					if(ans == cmp_size){
+						ans = 0;
+						
+						if(dq.empty()){
+							break;
+						}
+						
+						ans = dq.back();
+						dq.pop_back();
+					}
+				}
+				else{
+					if(str[i] == cmp[0]){
+						dq.push_back(ans);
+						ans = 1;
+					}else{
+						dq.push_back(ans);
+						ans = 0;
+						
+						while(!dq.empty()){
+							cout << cmp.substr(0, dq.front());
+							check = 1;
+							dq.pop_front();
+						}
+						
+						cout << str[i];
+						check = 1;
+					}
+				}
+					
+								
+			}
+			
+			while(!dq.empty()){
+				cout << cmp.substr(0, dq.front());
+				check = 1;
+				dq.pop_front();
+			}
+			
+			if(ans != 0){
+				cout << cmp.substr(0, ans);
+				//cout << str[i];
+				check = 1;
+				ans = 0;
+			}
+			
+		}else{
+			cout << str[i];
+			check = 1;
+		}
+	}
+	
+	if(check == 0){
+		cout << "FRULA";
+	}
+	
+	return 0;
+}

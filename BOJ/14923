@@ -1,0 +1,89 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+
+struct state {
+	int i;
+	int j;
+	bool key;
+};
+
+int N, M;
+int s_i, s_j;
+int e_i, e_j;
+int map[1001][1001];
+bool table[1001][1001][2];
+int dx[4] = { 0,0,1,-1 };
+int dy[4] = { 1,-1,0,0 };
+
+int main() {
+	cin >> N >> M;
+	cin >> s_i >> s_j;
+	cin >> e_i >> e_j;
+
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	queue<struct state> q;
+	struct state s;
+	s.i = s_i;
+	s.j = s_j;
+	s.key = 0;
+	table[s_i][s_j][0] = 1;
+	table[s_i][s_j][1] = 1;
+	q.push(s);
+
+	for (int t = 0;; t++) {
+		int size = q.size();
+		if (size == 0) {
+			break;
+		}
+
+		for (int i = 0; i < size; i++) {
+			struct state prev = q.front();
+			q.pop();
+			
+			if (prev.i == e_i && prev.j == e_j) {
+				cout << t; 
+				return 0;
+			}
+
+			for (int j = 0; j < 4; j++) {
+				struct state next;
+				int n_i = prev.i + dx[j];
+				int n_j = prev.j + dy[j];
+
+				if (n_i < 1 || n_i > N || n_j < 1 || n_j > M || table[n_i][n_j][prev.key] == 1)
+					continue;
+
+				if (map[n_i][n_j] == 1) {
+					if (prev.key == 0) {
+						next.key = 1;
+						table[n_i][n_j][1] = 1;
+						next.i = n_i;
+						next.j = n_j;
+						q.push(next);
+					}
+				}
+				else {
+					if (prev.key == 0) {
+						table[n_i][n_j][0] = 1;
+						table[n_i][n_j][1] = 1;
+					}
+					else
+						table[n_i][n_j][1] = 1;
+					next.key = prev.key;
+					next.i = n_i;
+					next.j = n_j;
+					q.push(next);
+				}
+			}
+		}
+	}
+
+	cout << "-1";
+	return 0;
+}

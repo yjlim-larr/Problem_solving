@@ -1,0 +1,75 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+const int MAX = 2100000000;
+
+int min(int a, int b) {
+	if (a < b) return a;
+	return b;
+}
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
+}
+
+int N, T;
+
+bool compare(string& str1, string& str2) {
+	return str1.compare(str2) < 0;
+}
+
+int main() {
+	scanf("%d", &T);
+	for (int I = 0; I < T; I++) {
+		scanf("%d", &N);
+		vector<string> v[10];
+		for (int i = 0; i < N; i++) {
+			getchar();
+			char str[11] = { 0, };
+			scanf("%s", str);
+			string  s = str;
+			v[str[0] - '0'].push_back(s);
+		}
+
+		int check = 0;
+		for (int i = 0; i <= 9; i++) {
+			sort(v[i].begin(), v[i].end(), compare);
+			for (int j = 0; j < v[i].size(); j++) {
+				string cmp = v[i][j];
+				for (int k = j + 1; k < v[i].size(); k++) {
+					int L = 0;
+
+					for (L = 0; L < cmp.length() && L < v[i][k].length(); L++) {
+						if (cmp[L] != v[i][k][L])
+							break;
+					}
+
+					if (L == cmp.length()) {
+						printf("NO\n");
+						check = 1;
+						break;
+					}
+
+				}
+				if (check == 1)
+					break;
+			}
+			if (check == 1)
+				break;
+		}
+		if (check == 0)
+			printf("YES\n");
+	}
+	return 0;
+}

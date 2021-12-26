@@ -1,0 +1,132 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+char str[51];
+int info[3];
+char sol[51];
+int len;
+bool dp[51][51][51][3][3][51]; //남은 A갯수, B갯수, C갯수, pre_pre_num, pre_num, prev 정보
+
+int dfs(int pre_pre_num, int pre_num, int prev) {
+	if (prev == len) {
+		sol[len] = '\0';
+		cout << sol;
+		return 0;
+	}
+
+	int ret = 0;
+
+	if (dp[info[0]][info[1]][info[2]][pre_pre_num][pre_num][prev] == 0) {
+		dp[info[0]][info[1]][info[2]][pre_pre_num][pre_num][prev] = 1;
+
+		if (pre_pre_num == 2 || pre_num == 2) {
+			//C불가.
+			if (pre_num == 1) {
+				//B불가. A만 가능.
+				if (info[0] > 0) {
+					info[0]--;
+					sol[prev] = 'A';
+					ret = dfs(pre_num, 0, prev + 1);
+					info[0]++;
+
+					if (ret == 0)
+						return 0;
+				}
+			}
+			else {
+				//A, B 가능.
+				if (info[0] > 0) {
+					info[0]--;
+					sol[prev] = 'A';
+					ret = dfs(pre_num, 0, prev + 1);
+					info[0]++;
+
+					if (ret == 0)
+						return 0;
+				}
+
+				if (info[1] > 0) {
+					info[1]--;
+					sol[prev] = 'B';
+					ret = dfs(pre_num, 1, prev + 1);
+					info[1]++;
+
+					if (ret == 0)
+						return 0;
+				}
+			}
+		}
+		else if (pre_num == 1) {
+			//C, A가능.
+			if (info[0] > 0) {
+				info[0]--;
+				sol[prev] = 'A';
+				ret = dfs(pre_num, 0, prev + 1);
+				info[0]++;
+
+				if (ret == 0)
+					return 0;
+			}
+
+			if (info[2] > 0) {
+				info[2]--;
+				sol[prev] = 'C';
+				ret = dfs(pre_num, 2, prev + 1);
+				info[2]++;
+
+				if (ret == 0)
+					return 0;
+			}
+		}
+		else {
+			//다가능.
+			if (info[0] > 0) {
+				info[0]--;
+				sol[prev] = 'A';
+				ret = dfs(pre_num, 0, prev + 1);
+				info[0]++;
+
+				if (ret == 0)
+					return 0;
+			}
+
+			if (info[1] > 0) {
+				info[1]--;
+				sol[prev] = 'B';
+				ret = dfs(pre_num, 1, prev + 1);
+				info[1]++;
+
+				if (ret == 0)
+					return 0;
+			}
+
+			if (info[2] > 0) {
+				info[2]--;
+				sol[prev] = 'C';
+				ret = dfs(pre_num, 2, prev + 1);
+				info[2]++;
+
+				if (ret == 0)
+					return 0;
+			}
+		}
+	}
+
+	return -1;
+}
+
+int main() {
+	cin >> str;
+	len = strlen(str);
+
+	for (int i = 0; i < len; i++) {
+		info[str[i] - 'A']++;
+	}
+
+	int ret = dfs(0,0,0);
+	if (ret == -1)
+		cout << "-1";
+
+	return 0;
+}

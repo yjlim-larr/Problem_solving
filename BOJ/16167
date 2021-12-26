@@ -1,0 +1,93 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<stack>
+//#pragma warning(disable:4996)
+using namespace std;
+
+struct state {
+	int prev;
+	int num; //현재까지 방문한 거점의 수.
+	int t;
+};
+
+int N, M;
+vector<pair<int, int>> v[101];
+queue<struct state> q;
+int visit[101], info[101];
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M;
+	for (int i = 1; i <= M; i++) {
+		int a, b, c, d, e;
+		cin >> a >> b >> c >> d >> e;
+		if (e > 10)
+			c += (e - 10) * d;
+		v[a].push_back({ b,c });
+	}
+
+	struct state s;
+	s.prev = 1;
+	s.num = 1;
+	s.t = 0;
+	q.push(s);
+
+	for (int i = 1; i <= N; i++) {
+		info[i] = 1e9;
+		visit[i] = 1e9;
+	}
+	info[1] = 0;
+	visit[1] = 0;
+
+	for (;;) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			struct state prev = q.front();
+			q.pop();
+
+			if (prev.prev == N) 
+				continue;
+			
+
+			int len = v[prev.prev].size();
+			for (int j = 0; j < len; j++) {
+				if (visit[v[prev.prev][j].first] == prev.t + v[prev.prev][j].second) {
+					//같은데 방문한 수가 더 적은 경우가 있을 수 있다.
+					info[v[prev.prev][j].first] = info[v[prev.prev][j].first] < (prev.num +1)?
+						info[v[prev.prev][j].first] : (prev.num+1);
+
+					visit[v[prev.prev][j].first] = prev.t + v[prev.prev][j].second;
+
+					struct state next;
+					next.prev = v[prev.prev][j].first;
+					next.t = prev.t + v[prev.prev][j].second;
+					next.num = info[v[prev.prev][j].first];
+
+					q.push(next);
+				}
+				else if (visit[v[prev.prev][j].first] > prev.t + v[prev.prev][j].second) {
+					info[v[prev.prev][j].first] = prev.num + 1;
+
+					visit[v[prev.prev][j].first] = prev.t + v[prev.prev][j].second;
+
+					struct state next;
+					next.prev = v[prev.prev][j].first;
+					next.t = prev.t + v[prev.prev][j].second;
+					next.num = info[v[prev.prev][j].first];
+
+					q.push(next);
+				}
+			}
+		}
+	}
+
+	if (visit[N] == 1e9) {
+		cout << "It is not a great way.";
+		return 0;
+	}
+	cout << visit[N] << ' ' << info[N];
+	return 0;
+}

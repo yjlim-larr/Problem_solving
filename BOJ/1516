@@ -1,0 +1,57 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+
+const int INF = 210000000;
+int N;
+int table[501];
+int info[501];
+vector<int> v[501];
+
+
+int dfs(int prev){
+	if(table[prev] != 0)
+		return table[prev];
+		
+	int size = v[prev].size();
+	for(int i=0; i<size; i++){
+		int ret = dfs(v[prev][i]);
+		table[prev] = ret < table[prev] ? table[prev] : ret;
+	}
+	
+	table[prev] += info[prev];
+	
+	return table[prev];
+}
+
+
+
+
+int main(){
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+	fill(table, table + 501, 0);
+	cin >> N;
+	
+	for(int i=1; i<=N; i++){
+		int a;
+		cin >> a;
+		info[i] = a;
+		
+		for(;;){
+			cin >> a;
+			if(a == -1)
+				break;
+			else{
+				v[i].push_back(a);
+			}
+		}
+	}
+	
+	
+	for(int i=1; i<=N; i++){
+		cout << dfs(i) << '\n'	;
+	}
+	
+	return 0;
+}

@@ -1,0 +1,60 @@
+#include<cstdio>
+#include<cstring>
+
+int T, N;
+int table[100001] = { 0, };
+int info[100001] = { 0, };
+int check[100001] = { 0, };
+
+int main() {
+	scanf("%d", &T);
+	for (int I = 0; I < T; I++) {
+		memset(table, 0, sizeof(table));
+
+		scanf("%d", &N);
+		for (int i = 1; i <= N; i++) {
+			scanf("%d", &info[i]);
+		}
+
+		int cnt = 0;
+		for (int i = 1; i <= N; i++) {
+			if (table[i] == 0) {
+				int len = 0; //방문 길이.
+				int prev = info[i];
+
+				check[len++] = i;
+				table[i] = 1; //방문했다.
+
+				for (;;) {
+					if (table[prev] == 3 || table[prev] == 2) {
+						// 사이클이 될수 없고, 이미 팀이 존재.
+						for (int j = 0; j < len; j++)
+							table[check[j]] = 3;// 불가능 표시.
+						break; 
+					}
+
+					if (table[prev] == 1) {// 이미 방문한곳 == 사이클이다.
+						for (int j = len-1; j >= 0; j--) {
+							if (check[j] == prev) {
+								table[check[j]] = 2;//팀이다.
+								cnt++;
+								for (int k = j-1; k >= 0; k--)
+									table[check[k]] = 3;
+								break;
+							}
+							table[check[j]] = 2;//팀이다.
+							cnt++;
+						}
+						break;
+					}
+					table[prev] = 1; //방문했다.
+					check[len++] = prev;
+					prev = info[prev];
+				}
+			}
+		}
+		printf("%d\n", N - cnt);
+	}
+
+	return 0;
+}

@@ -1,0 +1,52 @@
+#include<iostream>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<algorithm>
+using namespace std;
+
+string str;
+string cmp;
+vector<int> v[30];
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	cin >> str;
+	cin >> cmp;
+
+	int size = str.size();
+	int len = cmp.size();
+
+	for (int i = 0; i < len; i++) {
+		int pos = int(cmp[i] - 'a');
+		v[pos].push_back(i);
+	}
+
+	int cnt = 1;
+	int prev = -1;
+	for (int i = 0; i < size; i++) {
+		int pos = int(str[i] - 'a');
+
+		if (v[pos].size() == 0) {
+			cout << "-1";
+			return 0;
+		}
+		int idx = upper_bound(v[pos].begin(), v[pos].end(), prev) - v[pos].begin();
+
+		if (idx == v[pos].size()) {
+			//없다.
+			cnt++;
+			prev = v[pos][0];
+		}
+		else {
+			prev = v[pos][idx];
+		}
+	}
+
+	cout << cnt;
+
+	return 0;
+}

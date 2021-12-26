@@ -1,0 +1,55 @@
+#include <iostream>
+#include<cstring>
+using namespace std;
+
+int lk[3000002];
+int rk[3000002];
+string str;
+
+int main() {
+	cin >> str;
+	int size = str.size();
+	
+	str = "0" + str;
+	
+	//lk[1] = 1이전까지
+	//rk[3] = 4~끝까지.
+	for(int i=1; i<=size; i++){
+		if(str[i] == 'K'){
+			lk[i+1] = 1 + lk[i];
+		}else{
+			lk[i+1] = lk[i];
+		}
+		
+		if(str[size+1-i] == 'K'){
+			rk[size-i] = rk[size + 1 -i] + 1;
+		}else{
+			rk[size-i] = rk[size + 1 - i];
+		}
+	}
+	
+	int left = 1;
+	int right = size;
+	int ans = 0;
+	for(;;){
+		int r = right - left  + 1 - (rk[left-1] - rk[right]);
+		int k = lk[left] < rk[right] ? lk[left] : rk[right];
+		//cout << k << ' ' << r << '\n';
+		if(r != 0)
+			ans = ans < r + 2*k ? r+2*k : ans;
+		
+		if(left > right)
+			break;
+		
+		if(lk[left] > rk[right]){
+			right--;
+		}else{
+			left++;
+		}
+		
+	}
+	
+	cout << ans;
+	
+	return 0;
+}

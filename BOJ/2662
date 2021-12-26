@@ -1,0 +1,76 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
+}
+
+int N, M;
+int company[301][21] = { 0, };
+int dp[21][301][301] = { 0, };//첫번째 인덱스는 회사 번호, 두번째 인덱스는 투자한 돈., 세번째는 남은돈.
+
+int dfs(int c_num, int money, int total) {
+	//c_num은 투자한 회사번호, money은 해당 회사에 이만큼 투자하겠다. total은 지금까지 투자한 금액.
+	if (c_num == M + 1)
+		return 0; //모든 회사에 투자했다.
+
+	int ret = dp[c_num][money][N-total];
+	if (ret == -1) {
+		dp[c_num][money][N - total] = company[money][c_num];
+		ret = 0;
+		for (int i = 0; i <= N - total; i++) {
+			ret = max(ret, dfs(c_num + 1, i, total + i));
+		}
+		dp[c_num][money][N - total] += ret;
+	}
+	return dp[c_num][money][N - total];
+}
+
+void search(int c_num, int total, int remain) {
+	if (c_num <= M) {
+		for (int i = 0; i <= N - total; i++) { //i만원을 투자.
+			if (remain == dfs(c_num, i, total + i)) {
+				printf("%d ", i);
+				search(c_num + 1, total + i, remain - company[i][c_num]);
+			}
+		}
+	}
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 1; i <= M; i++)
+		company[0][i] = 0; //투자를 하지않았을 때 버는 돈
+
+	for (int i = 1; i <= N; i++) {
+		scanf("%d", &company[i][0]); //얼마를 투자하면.
+		for (int j = 1; j <= M; j++)
+			scanf("%d", &company[i][j]); //얻는 이익.
+	}
+
+	memset(dp, -1, sizeof(dp));
+	int ret = 0;
+	for (int i = 0; i <= N; i++)	//첫 회사에 0~N만원 투자한다.
+		ret = max(ret, dfs(1, i, i));
+	printf("%d\n", ret);
+
+	for (int i = 0; i <= N; i++) {
+		if (ret == dfs(1, i, i)) {
+			printf("%d ", i);
+			search(2,i,ret-company[i][1]);
+		}
+	}
+	return 0;
+}

@@ -1,0 +1,59 @@
+#include<iostream>
+#include<deque>
+using namespace std;
+
+int N;
+string str;
+
+int main(){
+	cin >> N;
+	cin >> str;
+	
+	int str_len = str.size();
+	
+	int table[27] = {0,};
+	int s = int(str[0] - 'a');
+	table[s] = 1;
+	int ans = 1;
+	int start = 0;
+	int len = 1;
+	int ret = 1;
+	
+	
+	for(int i=1; i<str_len; i++){
+		int prev = int(str[i]-'a');
+		
+		if(table[prev] == 0){
+			table[prev] = 1;
+			len++;
+			ans++;
+			
+			if(ans > N){
+				for(int j = start; j < i; j++){
+					int check = int(str[j] - 'a');
+					table[check]--;
+					len--;
+					
+					if(table[check] == 0){
+						ans-=1;
+						start = j+1;
+						break;
+					}else{
+						continue;
+					}
+				}
+			}else{
+				ret = len < ret ? ret : len;
+			}
+		}else{
+			table[prev]++;
+			len++;
+			ret = len < ret ? ret : len;
+		}
+	}
+	
+	
+	cout << ret;
+	return 0;
+	
+}

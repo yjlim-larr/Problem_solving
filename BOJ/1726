@@ -1,0 +1,128 @@
+#include<cstdio>
+#include<queue>
+using namespace std;
+
+struct state {
+	int i;
+	int j;
+	int di;
+};
+
+int dis_table[102][102][5] = { 0, };
+int map[102][102] = { 0, };
+int start_i, start_j, start_di;
+int end_i, end_j, end_di;
+int can_move[5][2] = {// move[1]은 동, move[2]은 서, move[3]은 남, move[4]은 북의 움직임을 담는다.
+	{ 0,0 },
+	{ 0,1 },{ 0,-1 },{ 1,0 },{ -1,0 }
+};
+queue<struct state> q;
+
+
+int main() {
+	int a, b, level;
+	int check = 0;
+	scanf("%d %d", &a, &b);
+
+	for (int i = 0; i < a + 2; i++) {
+		map[i][0] = 1;
+		map[i][b + 1] = 1;
+	}
+	for (int j = 0; j < b + 2; j++) {
+		map[0][j] = 1;
+		map[a + 1][j] = 1;
+	}
+	for (int i = 1; i <= a; i++) {
+		for (int j = 1; j <= b; j++) {
+			scanf("%d", &map[i][j]);
+		}
+	}
+
+	scanf("%d %d %d", &start_i, &start_j, &start_di);
+	scanf("%d %d %d", &end_i, &end_j, &end_di);
+
+	//처리부
+	struct state next;
+	next.i = start_i;
+	next.j = start_j;
+	next.di = start_di;
+	dis_table[next.i][next.j][next.di] = 1;
+	q.push(next);
+
+	for (level = 0;; level++) {
+		struct state prev;
+		int size = q.size();
+
+		for (int i = 0; i < size; i++) {
+			prev = q.front();
+			if (prev.i == end_i && prev.j == end_j) {
+				check = 1;
+				break;
+			}
+			else {
+				//5개의 움직임을 넣는다.
+				int di = 0;
+				for (di = 1; di < 5; di++) {
+					if (di == prev.di)
+						break;
+				}
+				//go 1~3
+				for (int k = 1; k < 4; k++) {
+					struct state next;
+					if (!map[prev.i + k*can_move[di][0]][prev.j + k*can_move[di][1]]) {
+						next.i = prev.i + k*can_move[di][0];
+						next.j = prev.j + k*can_move[di][1];
+						next.di = prev.di;
+						if (!dis_table[next.i][next.j][next.di]) {
+							dis_table[next.i][next.j][next.di] = 1;
+							q.push(next);
+						}
+					}
+					else {
+						break;
+					}
+				}
+				//turn left, right
+				next.i = prev.i;
+				next.j = prev.j;
+				if (prev.di == 1 || prev.di == 2) {
+					next.di = 4; 
+					if (!dis_table[next.i][next.j][next.di]) {
+						dis_table[next.i][next.j][next.di] = 1;
+						q.push(next);
+					}
+					next.di = 3; 
+					if (!dis_table[next.i][next.j][next.di]) {
+						dis_table[next.i][next.j][next.di] = 1;
+						q.push(next);
+					}
+				}
+				else {
+					next.di = 1;
+					if (!dis_table[next.i][next.j][next.di]) {
+						dis_table[next.i][next.j][next.di] = 1;
+						q.push(next);
+					}
+					next.di = 2;
+					if (!dis_table[next.i][next.j][next.di]) {
+						dis_table[next.i][next.j][next.di] = 1;
+						q.push(next);
+					}
+				}
+			}
+			q.pop();
+		}
+		if (check == 1) {
+			if (prev.di - end_di == -1 || prev.di - end_di == 1) {
+				printf("%d", level+2);
+			}
+			else if (prev.di == end_di) {
+				printf("%d", level);
+			}else
+				printf("%d", level+1);
+			break;
+		}
+	}
+
+	return 0;
+}

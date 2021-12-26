@@ -1,0 +1,147 @@
+#include<iostream>
+#include<queue>
+#include<cstring>
+//#pragma warning(disable:4996)
+using namespace std;
+
+int map[6][6][6]; //원래 맵
+int s_map[6][6][6]; //탐색용맵
+bool visit[6][6][6];
+int dx[6] = { 0,0,0,0,1,-1 };
+int dy[6] = { 0,0,1,-1,0,0 };
+int dz[6] = { 1,-1,0,0,0,0 };
+int ret = 210000000;
+bool check = 0;
+
+struct state {
+	int i;
+	int j;
+	int k;
+};
+
+void rotate(int k, int n) {
+	for (int i = 0; i < n; i++) {
+		int pre[6][6];
+
+		for (int i = 1; i <= 5; i++)
+			for (int j = 1; j <= 5; j++)
+				pre[i][j] = s_map[k][j][6 - i];
+
+
+		for (int i = 1; i <= 5; i++)
+			for (int j = 1; j <= 5; j++)
+				s_map[k][i][j] = pre[i][j];
+	}
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	for (int k = 1; k <= 5; k++)
+		for (int i = 1; i <= 5; i++)
+			for (int j = 1; j <= 5; j++)
+				cin >> map[k][i][j];
+
+	for (int i = 1; i <= 5; i++) {
+		int table[6];
+		table[1] = i;
+		for (int j = 1; j <= 5; j++) {
+			if (i == j)
+				continue;
+			table[2] = j;
+			for (int k = 1; k <= 5; k++) {
+				if (k == i || k == j)
+					continue;
+				table[3] = k;
+				for (int h = 1; h <= 5; h++) {
+					if (h == k || h == i || h == j)
+						continue;
+					table[4] = h;
+					for (int l = 1; l <= 5; l++) {
+						if (l == h | l == k || l == i || l == j)
+							continue;
+						table[5] = l;
+
+						for (int x = 1; x <= 5; x++)
+							for (int p_i = 1; p_i <= 5; p_i++)
+								for (int p_j = 1; p_j <= 5; p_j++)
+									s_map[x][p_i][p_j] = map[table[x]][p_i][p_j];
+
+						for (int a = 0; a < 4; a++) {
+							rotate(1, a);
+							for (int b = 0; b < 4; b++) {
+								rotate(2, b);
+								for (int c = 0; c < 4; c++) {
+									rotate(3, c);
+									for (int d = 0; d < 4; d++) {
+										rotate(4, d);
+										for (int e = 0; e < 4; e++) {
+											rotate(5, e);
+
+											if (s_map[5][1][1] == 0)
+												continue;
+
+											memset(visit, 0, sizeof(visit));
+											queue<struct state> q;
+											struct state s;
+											s.i = 1;
+											s.j = 1;
+											s.k = 5;
+											visit[5][1][1] = 1;
+											q.push(s);
+
+											for (int t = 0;; t++) {
+												int size = q.size();
+												if (size == 0) break;
+
+												for (int g = 0; g < size; g++) {
+													struct state prev = q.front();
+													q.pop();
+
+													if (prev.i == 5 && prev.j == 5 && prev.k == 1) {
+														check = 1;
+														ret = ret < t ? ret : t;
+														while (q.empty() != 1)
+															q.pop();
+														break;
+													}
+													else {
+														for (int d = 0; d < 6; d++) {
+															int n_i = prev.i + dx[d];
+															int n_j = prev.j + dy[d];
+															int n_k = prev.k + dz[d];
+
+															if (n_i < 1 || n_i > 5 || n_j < 1 || n_j > 5 || n_k < 1 || n_k > 5 ||
+																visit[n_k][n_i][n_j] == 1 || s_map[n_k][n_i][n_j] == 0)
+																continue;
+
+															struct state next;
+															next.i = n_i;
+															next.j = n_j;
+															next.k = n_k;
+															visit[n_k][n_i][n_j] = 1;
+
+															q.push(next);
+														}
+													}
+												}
+											}
+
+										}
+									}
+								}
+							}
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	if (check == 0)
+		cout << "-1";
+	else
+		cout << ret;
+
+	return 0;
+}

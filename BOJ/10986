@@ -1,0 +1,28 @@
+#include<iostream>
+//#pragma warning(disable:4996)
+#define ll long long
+using namespace std;
+
+int tree[1000001];
+ll info[1001];
+int M, N;
+
+int main() {
+	ll n = 0;
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M;
+    info[0] =1;// 선택을 안한경우.
+	for (int i = 1; i <= N; i++) {
+		cin >> tree[i];
+		tree[i] += tree[i - 1];
+		tree[i] %= M;
+		info[tree[i]]++;
+	}
+
+	n =0 ;
+	for (int i = 0; i < M; i++) 
+		n += (info[i] * (info[i]-1)) / 2;
+	
+	printf("%lld", n);
+	return 0;
+}

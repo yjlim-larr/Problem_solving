@@ -1,0 +1,62 @@
+#include<iostream>
+#include<string>
+#include<cstring>
+using namespace std;
+
+
+int dp[101][101][101];
+string str;
+string cmp;
+string cmp2;
+int str_len, cmp_len, cmp2_len;
+
+
+int dfs(int prev_i, int prev_j, int prev_k) {
+	if (prev_i >= str_len && prev_j >= cmp_len && prev_k >= cmp2_len) 
+		return 0;
+	
+	if (dp[prev_i][prev_j][prev_k] == -1) {
+		dp[prev_i][prev_j][prev_k] = 0;
+		int state = 0;
+
+		if (str[prev_i] == cmp[prev_j] && str[prev_i] == cmp2[prev_k])
+			dp[prev_i][prev_j][prev_k] = 1 + dfs(prev_i + 1, prev_j + 1, prev_k + 1);
+
+		if (prev_i < str_len) {
+			state = dfs(prev_i + 1, prev_j, prev_k);
+			dp[prev_i][prev_j][prev_k] = state < dp[prev_i][prev_j][prev_k]
+				? dp[prev_i][prev_j][prev_k]: state;
+		}
+
+		if (prev_j < cmp_len) {
+			state = dfs(prev_i, prev_j + 1, prev_k);
+			dp[prev_i][prev_j][prev_k] = state < dp[prev_i][prev_j][prev_k]
+				? dp[prev_i][prev_j][prev_k]: state;
+		}
+
+		if (prev_k < cmp2_len) {
+			state = dfs(prev_i, prev_j, prev_k+1);
+			dp[prev_i][prev_j][prev_k] = state < dp[prev_i][prev_j][prev_k]
+				? dp[prev_i][prev_j][prev_k] : state;
+		}
+	}
+	
+	return dp[prev_i][prev_j][prev_k];
+}
+
+int main() {
+	cin >> str;
+	getchar();
+	cin >> cmp;
+	getchar();
+	cin >> cmp2;
+
+	str_len = str.length();
+	cmp_len = cmp.length();
+	cmp2_len = cmp2.length();
+
+	memset(dp, -1, sizeof(dp));
+	cout << dfs(0, 0, 0);
+
+	return 0;
+}

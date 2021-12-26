@@ -1,0 +1,100 @@
+#include<cstdio>
+#include<vector>
+#include<queue>
+#include<cstring>
+#define ll long long
+using namespace std;
+
+int T;
+int cnt, N, goal;
+ll table[1001] = { 0, };
+int need_cnt[1001] = { 0, };
+int t_info[1001] = { 0, };
+vector<int> v[1001];
+int check = 0;
+
+void init() {
+	check = 0;
+	memset(table, 0, sizeof(table));
+	memset(need_cnt, 0, sizeof(need_cnt));
+	memset(t_info, 0, sizeof(t_info));
+	for (int i = 0; i <= cnt; i++)
+		v[i].clear();
+}
+
+void bfs(int start) {
+	if (check == 1)
+		return;
+
+	queue<pair<int, ll>> q;
+	q.push({ start ,t_info[start] }); //first == node_num, second == time
+
+	if (goal == start) {
+		printf("%lld\n", (ll)t_info[start]);
+		return;
+	}
+
+	for (;;) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			int prev = q.front().first;
+			ll prev_time = q.front().second;
+			q.pop();
+
+			for (int j = 0; j < v[prev].size(); j++) {
+				if (table[v[prev][j]] < prev_time + (ll)t_info[v[prev][j]]) {
+					table[v[prev][j]] = prev_time + (ll)t_info[v[prev][j]];
+					need_cnt[v[prev][j]] -= 1;
+				}
+				else
+					need_cnt[v[prev][j]] -= 1;
+
+				if (need_cnt[v[prev][j]] == 0) {
+					if(v[prev][j] != goal)
+						q.push({ v[prev][j], table[v[prev][j]] });
+					else {
+						printf("%lld\n", table[v[prev][j]]);
+						check = 1;
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	scanf("%d", &T);
+
+	for (int I = 0; I < T; I++) {
+		//입력과정
+		scanf("%d %d", &cnt, &N);
+		for (int i = 1; i <= cnt; i++)
+			scanf("%d", &t_info[i]);
+		for (int i = 0; i < N; i++) {
+			int start, end;
+			scanf("%d %d", &start, &end);
+			v[start].push_back(end);
+			need_cnt[end] += 1;
+		}
+		scanf("%d", &goal);
+		//문제 해결
+
+		bool search[1001] = { 0, };
+		for (int i = 1; i <= cnt; i++) {
+			if (need_cnt[i] == 0)
+				search[i] = 1;
+		}
+
+		for (int i = 1; i <= cnt; i++)
+			if (search[i] == 1)
+				bfs(i);
+
+		//초기화.
+		init();
+	}
+
+	return 0;
+}

@@ -1,0 +1,67 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+
+int N, M;
+int start_i, start_j;
+int dx[8] = { 1,-1,0,0,1,-1,1,-1 };
+int dy[8] = { 0,0,1,-1,1,1,-1,-1 };
+int end_i, end_j;
+int map[402][402] = { 0, };
+//start_i, start_j = map[200][200]이고 상대위치로 저장하자!
+ull dp[402][402][200] = { 0, }; // 갈수있는지 여부.
+
+ull dfs(int prev_i, int prev_j, int time) {
+	if (time > N)
+		return 0;
+	if (prev_i == end_i && prev_j == end_j && time <= N)
+		return 1;
+	ull ret = dp[prev_i][prev_j][time];
+	if (ret == -1) {
+		ret = 0;
+		for (int i = 0; i < 4; i++) {
+			if(map[prev_i + dx[i]][prev_j + dy[i]] != -1)
+				ret += dfs(prev_i + dx[i], prev_j + dy[i], time + 1);
+		}
+		dp[prev_i][prev_j][time] = ret;
+		dp[prev_i][prev_j][time] %= 1000000007;
+	}
+	return ret;
+}
+
+int main() {
+	scanf("%d %d", &start_i, &start_j);
+	scanf("%d", &N);
+	scanf("%d %d", &end_i, &end_j);
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++) {
+		int a, b;
+		scanf("%d %d", &a, &b);
+		a += (200 - start_i);
+		b += (200 - start_j); //장애물을 start_i, start_j의 상대 위치로 바꾸어 주었다.
+		if (0 <= a && a <= 400 && 0 <= b && b <= 400)
+			map[a][b] = -1; //장애물이 있어서 갈 수 없다.
+	}
+	end_i += (200 - start_i);
+	end_j += (200 - start_j);
+	if (0 <= end_i && end_i <= 400 && 0 <= end_j && end_j <= 400) {
+		map[end_i][end_j] = 1;
+		memset(dp, -1, sizeof(dp));
+		printf("%lld", dfs(200,200,0)%1000000007);
+		return 0;
+	}
+	else {
+		printf("0");
+		return 0;
+	}
+}

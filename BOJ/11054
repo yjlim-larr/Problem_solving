@@ -1,0 +1,56 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#define score second
+using namespace std;
+
+int N;
+int info[1001] = { 0, };
+int dp[1001][2][1001] = { 0, };
+
+int max(int a, int b) {
+	if (a > b)
+		return a;
+	return b;
+}
+
+int dfs(int prev, int pre_num, int type) { //type == 1 오름차순. type == 0 내림차순
+	if (prev == N+1) {
+		return 0;
+	}
+	int ret = dp[prev][type][pre_num];
+	if (ret==-1) {
+		if (type == 1 && info[prev] < pre_num) {
+			ret = max(ret, dfs(prev, pre_num, 0)); //내림차순으로 바꾼다.
+			ret = max(ret, dfs(prev+1, pre_num, type)); //포함 안시키고 다음으로 넘어간다.
+		}
+		else if (type == 1 && info[prev] > pre_num) {
+			//오름차순 계속 진행 가능.
+			ret = max(ret, dfs(prev + 1, pre_num, 1)); //포함 안시킴
+			ret = max(ret, dfs(prev + 1, info[prev], 1) + 1); // 포함 시킴
+		}
+		else if (type == 0 && info[prev] < pre_num) {
+			//내림차순 계속 진행 가능
+			ret = max(ret, dfs(prev + 1, pre_num, 0)); //포함 안시킴
+			ret = max(ret, dfs(prev + 1, info[prev], 0) +1 ); // 포함 시킴
+		}
+		else if (type == 0 && info[prev] > pre_num) {
+			ret = max(ret, dfs(prev + 1, pre_num, 0)); //포함 안시키고 다음으로 넘어간다.
+		}
+		dp[prev][type][pre_num] = ret;
+	}
+	return ret;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 1; i <= N; i++) {
+		scanf("%d", &info[i]);
+	}
+	memset(dp, -1, sizeof(dp));
+	printf("%d", dfs(1,0,1));
+	return 0;
+}

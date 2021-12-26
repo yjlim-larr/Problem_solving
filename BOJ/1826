@@ -1,0 +1,55 @@
+#include<cstdio>
+#include<iostream>
+#include<queue>
+#include<algorithm>
+using namespace std;
+
+priority_queue<int> q;
+int N;
+pair<int, int> p_info[10001];
+int M, K;
+
+bool compare(pair<int, int> p1, pair<int, int> p2) {
+	return p1.first < p2.first;
+}
+
+int main() {
+	cin >> N;
+
+	for (int i = 0; i < N; i++) {
+		cin >> p_info[i].first >> p_info[i].second;
+	}
+	sort(p_info, p_info + N, compare);
+	cin >> M >> K;
+
+	p_info[N].first = M;
+	p_info[N].second = 0;
+
+	//start == 0
+	int cnt = 0;
+	int prev = 0;
+	int can_go = prev + K;
+
+	for (int i = 0; i < N + 1;) {
+		if (p_info[i].first <= can_go) {
+			q.push(p_info[i].second);
+			i++;
+		}
+		else {
+			//갈수 없는 위치.
+			if (q.size() != 0) {
+				int n = q.top();
+				q.pop();
+				cnt++;
+				can_go += n;
+			}
+			else {
+				printf("-1");
+				return 0;
+			}
+		}
+	}
+
+	printf("%d", cnt);
+	return 0;
+}

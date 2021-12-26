@@ -1,0 +1,78 @@
+#include <iostream>
+#include<vector>
+#include<queue>
+#include<utility>
+#include<algorithm>
+
+using namespace std;
+
+int T, N, M, K;
+
+
+
+int main() {
+	cin >> T;
+	for(int k=0; k<T; k++){
+		cin >> N >> M >>K;
+		
+		vector<pair<int,int>> v[501];
+		int table[501] = {0,};
+		for(int i=1; i<=N; i++){
+			table[i] = 1e8;
+		}
+		//table[1] = 0;
+		
+		for(int i=0; i<M; i++){
+			int a, b,c;
+			cin >> a >> b >> c;
+			v[a].push_back({b,c});
+			v[b].push_back({a,c});
+		}
+		
+		for(int i=0; i<K; i++){
+			int a, b,c;
+			cin >> a >> b >> c;
+			v[a].push_back({b,-1 * c});
+		}
+		
+		
+		for(int i=1; i<=N; i++){
+			
+			for(int j=1; j<=N; j++){
+				int s = v[j].size();
+				for(int k=0; k<s; k++){
+					if(1){//
+						int ret = table[j] + v[j][k].second;
+						table[v[j][k].first] = table[v[j][k].first] < ret ? table[v[j][k].first] : ret;
+					}
+				}
+			}
+		}
+		
+		int ans = 0;
+		for(int j=1; j<=N; j++){
+			int s = v[j].size();
+			
+			for(int k=0; k<s; k++){
+				if(1){//
+					int ret = table[j] + v[j][k].second;
+					
+					if(table[v[j][k].first] > ret){
+						ans++;
+						break;
+					}
+				}
+			}
+			
+			if(ans > 0)
+				break;
+		}
+		
+		if(ans > 0)
+			cout << "YES" << '\n';
+		else
+			cout << "NO" << '\n';
+	}
+	
+	return 0;
+}

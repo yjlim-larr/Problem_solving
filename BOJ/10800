@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+ 
+#define INF 0x3f3f3f3f
+#define ft first
+#define sd second
+#define all(x) (x).begin(), (x).end()
+using namespace std;
+using pii = pair<int, int>;
+using vpii = vector<pii>;
+ 
+int n;
+vector<tuple<int, int, int>> p;
+vpii cnt[222'222];
+int ans[222'222];
+ 
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+ 
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int u, v;
+        cin >> u >> v;
+        p.emplace_back(v, u, i);
+        cnt[u].emplace_back(v, v);
+    }
+    for (int i = 1; i < n + 1; i++) {
+        cnt[i].emplace_back(0, 0);
+        sort(all(cnt[i]));
+        for (int j = 1; j < cnt[i].size(); j++) {
+            cnt[i][j].sd += cnt[i][j - 1].sd;
+        }
+    }
+ 
+    sort(all(p));
+    int sum = 0, res = get<0>(p[0]);
+    for (int i = 1; i < p.size(); i++) {
+        auto[s, c, idx] = p[i];
+        if (get<0>(p[i - 1]) != s) {
+            sum += res;
+            res = 0;
+        }
+        int cntIdx = upper_bound(all(cnt[c]), make_pair(s - 1, INF)) - cnt[c].begin() - 1;
+        ans[idx] = sum - cnt[c][cntIdx].sd;
+        res += s;
+    }
+    for (int i = 0; i < n; i++) {
+        cout << ans[i] << '\n';
+    }
+}

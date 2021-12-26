@@ -1,0 +1,27 @@
+#include <stdio.h>
+
+int N, K, S;
+int order[401][401];
+
+int main() {
+	scanf("%d %d", &N, &K);
+	for (int kc = 1; kc <= K; kc++){
+		int from, to;
+		scanf("%d %d", &from, &to);
+		order[from][to] = -1;
+		order[to][from] = 1;
+	}
+	for (int k = 1; k <= N; k++)
+		for (int x = 1; x <= N; x++)
+			for (int y = 1; y <= N; y++)
+				if ((order[x][k] == 1 || order[x][k] == -1) && order[x][k] == order[k][y])
+					order[x][y] = order[x][k];
+
+	scanf("%d", &S);
+	for (int sc = 1; sc <= S; sc++) {
+		int from, to;
+		scanf("%d %d", &from, &to);
+		printf("%d\n", order[from][to]);
+	}
+	return 0;
+}

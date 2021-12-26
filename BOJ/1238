@@ -1,0 +1,83 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <limits.h>
+#include <cstdio>
+ 
+#define max(a,b)(a > b ? a : b)
+ 
+using namespace std;
+ 
+typedef pair<int, int> pii;
+ 
+vector<pii> adj[1001]; 
+ 
+vector<int> dijkstra(int src, int V, int E)
+{
+    // V만큼 배열을 INT_MAX로 초기화
+    vector<int> dist(V, INT_MAX);
+    dist[src] = 0;
+ 
+    priority_queue<pii> pq;
+ 
+    pq.push(pii(0, src));
+ 
+    while (!pq.empty())
+    {
+        int cost = -pq.top().first;
+        int here = pq.top().second;
+ 
+        pq.pop();
+ 
+        if (dist[here] < cost)
+            continue;
+ 
+        // 인접한 정점들을 모두 검사.
+        for (int i = 0; i < adj[here].size(); i++)
+        {
+            int there = adj[here][i].first;
+            int nextDist = cost + adj[here][i].second;
+ 
+            // 더 짧은 경로를 발견하면, dist[]를 갱신하고 우선순위 큐에 넣는다.
+            if (dist[there] > nextDist)
+            {
+                dist[there] = nextDist;
+                pq.push(pii(-nextDist, there));
+            }
+        }
+    }
+ 
+ 
+    return dist;
+}
+ 
+int main()
+{
+    // 정점, 간선의 개수 및 도착점
+    int V, E, end;
+ 
+    scanf("%d %d %d", &V, &E, &end);
+ 
+    V++; // 정점의 개수가 1부터 시작하면 V++해준다.
+ 
+    for (int i = 0; i < E; i++)
+    {
+        int from, to, val;
+        scanf("%d %d %d", &from, &to, &val);
+ 
+        adj[from].push_back(pii(to,val));
+    }
+ 
+    int ans = 0;
+    for (int start = 1; start < V; start++)
+    {
+        vector<int> go = dijkstra(start, V, E);
+        vector<int> come = dijkstra(end, V, E);
+ 
+        ans = max(ans, go[end] + come[start]);
+    }
+ 
+    printf("%d", ans);
+ 
+    return 0;
+}

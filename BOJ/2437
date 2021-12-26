@@ -1,0 +1,33 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+const int MAX = 2100000000;
+
+int N;
+ll info[1001] = { 0, };
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%lld", &info[i]);
+	}
+	sort(info, info + N);
+	ll total = 0;
+	for (int i = 0;i<N; i++) {
+		if (total + 1 < info[i])
+			break;
+		total += info[i];
+	}
+	printf("%lld", total + 1);
+	return 0;
+}

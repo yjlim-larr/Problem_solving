@@ -1,0 +1,111 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+int min(int a, int b) {
+	if (a < b) return a;
+	return b;
+}
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
+}
+
+int N;
+vector<int> left_child[10001];
+vector<int> right_child[10001];
+vector<int> level[10001];
+int parent[10001] = { 0, };
+int node_count[10001] = { 0, };
+int n = 0;
+
+
+void mid_dfs(int prev) {
+	if (left_child[prev].size())
+		mid_dfs(left_child[prev][0]);
+	node_count[prev] = ++n;
+	if (right_child[prev].size())
+		mid_dfs(right_child[prev][0]);
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		int node, left_node, right_node;
+		scanf("%d %d %d", &node, &left_node, &right_node);
+		if (left_node != -1) {
+			left_child[node].push_back(left_node);
+			parent[left_node] = node;
+		}
+		if (right_node != -1) {
+			right_child[node].push_back(right_node);
+			parent[right_node] = node;
+		}
+	}
+	//루트 노드 찾기.
+	int route_node = 0;
+	for (int i = 1; i <= N; i++) {
+		if (parent[i] == 0) {
+			route_node = i;
+			break;
+		}
+	}
+	//중위순회로 번호 저장.
+	mid_dfs(route_node);
+
+	//레벨 별로 분류.
+	level[1].push_back(route_node);
+	queue<int> q;
+	q.push(route_node);
+	int level_max = 0;
+	for (int k = 2;; k++) {
+		int size = q.size();
+		if (size == 0) {
+			level_max = k;
+			break;
+		}
+		for (int i = 0; i < size; i++) {
+			int prev = q.front();
+			q.pop();
+			if (left_child[prev].size()) {
+				level[k].push_back(left_child[prev][0]);
+				q.push(left_child[prev][0]);
+			}
+			if (right_child[prev].size()) {
+				level[k].push_back(right_child[prev][0]);
+				q.push(right_child[prev][0]);
+			}
+		}
+	}
+
+	int s_max = 0;
+	int s[10001] = { 0, };
+	for (int k=1;k<level_max;k++) {
+		if (level[k].size() >= 2) {
+			s[k] = node_count[level[k][level[k].size() - 1]] - node_count[level[k][0]] +1;
+			s_max = max(s_max, s[k]);
+		}
+		else if (level[k].size() == 1) {
+			s[k] = 1;
+			s_max = max(s_max, s[k]);
+		}
+	}
+
+	for (int i = 1; i < level_max; i++) {
+		if (s[i] == s_max) {
+			printf("%d %d", i, s[i]);
+			break;
+		}
+	}
+	return 0;
+}

@@ -1,0 +1,70 @@
+#include<cstdio>
+#include<vector>
+#include<queue>
+#include<stack>
+using namespace std;
+
+const int n_ = 1001;
+int N, M;
+vector<int> v[n_];
+int info[n_];
+bool table[n_];
+int cnt;
+
+int main() {
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < M; i++) {
+		int a = 0;
+		scanf("%d", &a);
+
+		int b = 0,c;
+		scanf("%d", &b);
+		for (int j = 1; j < a; j++) {
+			scanf("%d", &c);
+			v[c].push_back(b);
+			info[b] += 1;
+			b = c;
+		}
+	}
+
+	cnt = N;
+	stack<int> s;
+	queue<int> q;
+	for (;;) {
+		for (int i = 1; i <= N; i++) {
+			if (info[i] == 0 && table[i] != 1) {
+				table[i] = 1;
+				cnt--;
+				q.push(i); //해당이 시작 부분.
+				s.push(i);
+			}
+		}
+
+		if (cnt == 0)
+			break;
+
+		int size = q.size();
+		if (size == 0 && cnt != 0) {
+			printf("0");
+			return 0;
+		}
+
+		for (int i = 0; i < size; i++) {
+			int prev = q.front();
+			q.pop();
+
+			for (vector<int>::iterator iter = v[prev].begin(); iter != v[prev].end(); iter++) {
+				info[*iter] -= 1;
+			}
+		}
+	}
+
+	int size = s.size();
+	for (int i = 0; i < size; i++) {
+		printf("%d\n", s.top());
+		s.pop();
+	}
+
+	return 0;
+}

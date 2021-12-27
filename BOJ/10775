@@ -1,0 +1,42 @@
+#include<iostream>
+using namespace std;
+
+int N, M;
+int table[100001];
+
+
+int main(){
+	int ans = 0;
+	cin >> N;
+	cin >> M;
+	
+	for(int i=0; i<M; i++){
+		int a;
+		cin >> a;
+		bool check = 0;
+		
+		int pre = 0;
+		for(int j=a; j>=1; j--){
+			if(table[j] == 0){
+				table[pre] = j;
+				table[j] = j;
+				ans++;
+				check = 1;
+				break;
+			}else{
+				pre = j;
+				j = table[j];
+			}
+		}
+		
+		if(check == 0){
+			cout << ans;
+			return 0;
+		}
+	}
+	
+	
+	cout << N;
+	
+	return 0;
+}

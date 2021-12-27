@@ -1,0 +1,100 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<stack>
+using namespace std;
+
+const int INF = 210000000;
+
+int N, M;
+vector<pair<int, int>> v[101];
+int pre[101];
+int info[101];
+int table[101];
+int cycle[101];
+bool visit[101];
+
+int main() {
+	cin >> N >> M;
+	for (int i = 0; i < M; i++) {
+		int a, b, c;
+		cin >> a >> b >> c;
+		v[a].push_back({ b, c });
+	}
+
+	fill(info, info + 101, -1 * INF);
+	table[1] = 1;
+	info[1] = 0;
+	queue<int> q;
+	q.push(1);
+
+	while (!q.empty()) {
+		int prev = q.front();
+		q.pop();
+		table[prev] = 0;
+		cycle[prev]++;
+
+		if (cycle[prev] >= N) {
+			queue<int> pq;
+			pq.push(prev);
+			
+			visit[prev] = 1;
+			while(!pq.empty()){
+				prev = pq.front();
+				pq.pop();
+				if(prev == N){
+					cout << "-1";
+					return 0;
+				}
+				
+				int size = v[prev].size();
+				for(int i=0; i<size; i++){
+					if(visit[v[prev][i].first] == 0){
+						visit[v[prev][i].first] = 1;
+						pq.push(v[prev][i].first);
+					}
+				}
+			}
+			
+			break;
+		}
+
+		int size = v[prev].size();
+		for (int i = 0; i < size; i++) {
+			int next = v[prev][i].first;
+			int next_w = info[prev] + v[prev][i].second;
+
+			if (info[next] < next_w) {
+				info[next] = next_w;
+				pre[next] = prev;
+
+				if (table[next] == 0)
+					table[next] = 1;
+				else
+					continue;
+
+				q.push(next);
+			}
+		}
+	}
+
+	if (info[N] == -1 * INF) {
+		cout << "-1";
+		return 0;
+	}
+
+	stack<int> s;
+	int pos = N;
+	while (pos != 1) {
+		s.push(pos);
+		pos = pre[pos];
+	}
+	s.push(1);
+
+	while (!s.empty()) {
+		cout << s.top() << ' ';
+		s.pop();
+	}
+
+	return 0;
+}

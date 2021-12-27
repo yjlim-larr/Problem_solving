@@ -1,0 +1,71 @@
+#include<iostream>
+#include<queue>
+//#pragma warning(disable:4996)
+using namespace std;
+
+int N, M;
+char map[10001][501];
+bool table[10001][501];
+queue<pair<int, int>> q;
+int n = 0;
+
+int dfs(int prev_i, int prev_j) {
+	if (prev_j == M - 1) {
+		return 1;
+	}
+
+	int ret = 0;
+	int n_i = prev_i - 1;
+	int n_j = prev_j + 1;
+
+	if (table[n_i][n_j] == 0 && 0 <= n_i && n_i < N && map[n_i][n_j] != 'x') {
+		table[n_i][n_j] = 1;
+		ret = dfs(n_i, n_j);
+		
+		if (ret == 1) {
+			return 1;
+		}
+	}
+
+	n_i = prev_i;
+	if (table[n_i][n_j] == 0 && 0 <= n_i && n_i < N  && map[n_i][n_j] != 'x') {
+		table[n_i][n_j] = 1;
+		ret = dfs(n_i, n_j);
+
+		if (ret == 1) {
+			return 1;
+		}
+	}
+
+	n_i = prev_i + 1;
+	if (table[n_i][n_j] == 0 && 0 <= n_i && n_i < N  && map[n_i][n_j] != 'x') {
+		table[n_i][n_j] = 1;
+		ret = dfs(n_i, n_j);
+
+		if (ret == 1) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	//ios::sync_with_stdio(false);
+	cin >> N >> M;
+
+	for (int i = 0; i < N; i++) {
+		getchar();
+		for (int j = 0; j < M; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	for (int i = 0; i < N; i++) {
+		n += dfs(i, 0);
+	}
+
+	cout << n;
+	return 0;
+}

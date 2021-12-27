@@ -1,0 +1,78 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#include<cstring>
+#define ll long long
+///pragma warning(disable:4996)
+using namespace std;
+
+
+int N;
+int info[51];
+int p[51]; //연속정보.
+bool table[500001];
+ll dp[500001];
+
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	table[1] = 1;
+	table[0] = 1;
+	for (int i = 2; i <= 500000; i++) {
+		if (table[i] == 0) {
+			for (int k = 2; k*i <= 500000; k++)
+				table[k*i] = 1;
+		}
+	}
+
+	cin >> N;
+	for (int i = 0; i < N; i++) 
+		cin >> info[i];
+
+	sort(info, info + N);
+	for (int i = 0; i < N; i++) {
+		int start = info[i];
+		bool check = 0;
+		for (int j = i+1; j < N; j++) {
+			if (start == info[j])
+				continue;
+			else {
+				p[i]=(j-1);
+				check = 1;
+				break;
+			}
+		}
+		if (check == 0) 
+			p[i] = (N - 1);
+	}
+
+	memset(dp, 0, sizeof(dp));
+	int start = 0;
+	if (info[0] == 0) {
+		dp[0] = p[0] + 2;
+		start = p[0] + 1;
+	}else
+		dp[0] = 1;
+
+	for (int i = start; i < N;) {
+		int n = p[i];
+		int l = n - i + 1;
+
+		for (int j = 500000; j >= 0; j--) {
+			for (int k = l; k > 0; k--) {
+				if(k*info[i] + j <= 500000)
+					dp[info[i] * k + j] += (ll)dp[j];
+			}
+		}
+		i = n + 1;
+	}
+
+	ll total = 0;
+	for (int i = 0; i <= 500000; i++) {
+		if (table[i] == 0) 
+			total += (ll)dp[i];
+	}
+
+	cout << total;
+	return 0;
+}

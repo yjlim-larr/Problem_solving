@@ -1,0 +1,78 @@
+#include<iostream>
+using namespace std;
+
+int N, M;
+int info[31];
+int dp[31][15001][2]; // 두 무게의 차. 0:왼쪽이 더 무거움, 1:오른쪽이 더 무거움.
+bool table[40001];
+
+void dfs(int prev, int state, int n) {
+	if (prev >= N) {
+		if(state <= 40000)
+			table[state] = 1;
+
+		return;
+	}
+
+	if (dp[prev][state][n] == 0) {
+		dp[prev][state][n] = 1;//방문 했다.
+		//놓는다. 왼쪽, 오른쪽
+		if (n == 0) {
+			//왼쪽
+			dfs(prev + 1, state + info[prev], n);
+			//오른쪽
+			int ret = state - info[prev];
+
+			if (ret < 0) {
+				dfs(prev + 1, -1 * ret, 1);
+			}
+			else {
+				dfs(prev + 1, ret, 0);
+			}
+		}
+		else {
+			//왼쪽
+			dfs(prev + 1, state + info[prev], n);
+			//오른쪽
+			int ret = state - info[prev];
+
+			if (ret < 0) {
+				dfs(prev + 1, -1 * ret, 0);
+			}
+			else {
+				dfs(prev + 1, ret, 1);
+			}
+		}
+
+		//안 놓는다
+		dfs(prev + 1, state, n);
+	}
+}
+
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		cin >> info[i];
+	}
+	cin >> M;
+
+	dfs(0, 0, 0);
+
+	for (int j = 0; j < M; j++) {
+		int a;
+		cin >> a;
+
+		if (table[a] == 1)
+			cout << "Y ";
+		else
+			cout << "N ";
+	}
+
+
+	return 0;
+}

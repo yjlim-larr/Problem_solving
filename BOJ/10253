@@ -1,0 +1,22 @@
+#include<cstdio>
+#define ll long long
+
+ll solve(ll a, ll b) {
+	if (b%a == 0)
+		return b/a;
+	ll ret = b / a + 1;
+	a = a*ret - 1 * b;
+	b = b*ret;
+	return solve(a, b);
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; i++) {
+		ll a, b;
+		scanf("%lld %lld", &a, &b);
+		printf("%lld\n", solve(a, b));
+	}
+	return 0;
+}

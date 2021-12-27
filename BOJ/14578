@@ -1,0 +1,29 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+long long mod=1000000007;
+long long arr[100001];
+
+int main(){
+
+    int n;
+    scanf("%d",&n);
+
+    arr[1]=0; arr[2]=1;
+    for(int i=3;i<=n;i++){
+        arr[i] = (i-1)*(arr[i-1]+arr[i-2]);
+        arr[i] %= mod;
+    }
+
+    long long kk=1;
+    for(int i=2;i<=n;i++){
+        kk*=i; kk%=mod;
+    }
+    printf("%lld", (kk*arr[n])%mod);
+
+    return 0;
+}

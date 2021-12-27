@@ -1,0 +1,235 @@
+#include<iostream>
+//#pragma warning(disable:4996)
+using namespace std;
+
+int N, M;
+int arr[21][21];
+int ans = 0;
+
+void move_left() {
+	for(int i=1; i<=N; i++){
+		for(int k =0;k<2;k++){
+			bool check = 0;
+			int info[21] = {0,};
+			int cnt = 1;
+            
+			for(int j=1; j<=N; j++){
+				if(arr[i][j] != 0){
+					info[cnt] = arr[i][j];
+					cnt++;
+				}
+			}
+			
+			for(int j=1; j<cnt; j++){
+				arr[i][j] = info[j];
+			}
+			for(int j=cnt; j<=N; j++){
+				arr[i][j] = 0;
+			}
+			
+			if(k==1)
+				break;
+			
+			for(int j=1; j<cnt; j++){
+				if(arr[i][j] == arr[i][j+1]){
+					arr[i][j] *=2;
+					arr[i][j+1] = 0;
+					check = 1;
+				}
+			}
+			
+			if(check == 0)
+				break;
+		}
+	}
+}
+
+void move_right() {
+	for(int i=1; i<=N; i++){
+		for(int k = 0;k<2;k++){
+			bool check = 0;
+			int info[21] = {0,};
+			int cnt = 1;
+            
+			for(int j=1; j<=N; j++){
+				if(arr[i][N+1-j] != 0){
+					info[cnt] = arr[i][N+1-j];
+					cnt++;
+				}
+			}
+			
+			for(int j=1; j<cnt; j++){
+				arr[i][N+1-j] = info[j];
+			}
+			for(int j=cnt; j<=N; j++){
+				arr[i][N+1-j] = 0;
+			}
+			
+			if(k==1)
+				break;
+			
+			for(int j=1; j<cnt; j++){
+				if(arr[i][N+1-j] == arr[i][N-j]){
+					arr[i][N+1-j] *=2;
+					arr[i][N-j] = 0;
+					check = 1;
+				}
+			}
+			
+			if(check == 0)
+				break;
+		}
+	}
+}
+
+void move_up() {
+	for(int i=1; i<=N; i++){
+		for(int k = 0;k<2;k++){
+			bool check = 0;
+			int info[21] = {0,};
+			int cnt = 1;
+            
+			for(int j=1; j<=N; j++){
+				if(arr[j][i] != 0){
+					info[cnt] = arr[j][i];
+					cnt++;
+				}
+			}
+			
+			for(int j=1; j<cnt; j++){
+				arr[j][i] = info[j];
+			}
+			for(int j=cnt; j<=N; j++){
+				arr[j][i] = 0;
+			}
+			
+			if(k==1)
+				break;
+			
+			for(int j=1; j<cnt; j++){
+				if(arr[j][i] == arr[j+1][i]){
+					arr[j][i] *=2;
+					arr[j+1][i] = 0;
+					check = 1;
+				}
+			}
+			
+			if(check == 0)
+				break;
+		}
+	}
+}
+
+void move_down() {
+	for(int i=1; i<=N; i++){
+		for(int k = 0;k<2;k++){
+			bool check = 0;
+			int info[21] = {0,};
+			int cnt = 1;
+			
+			for(int j=1; j<=N; j++){
+				if(arr[N+1-j][i] != 0){
+					info[cnt] = arr[N+1-j][i];
+					cnt++;
+				}
+			}
+			
+			for(int j=1; j<cnt; j++){
+				arr[N+1-j][i] = info[j];
+			}
+			for(int j=cnt; j<=N; j++){
+				arr[N+1-j][i] = 0;
+			}
+			
+			if(k==1)
+				break;
+			
+			for(int j=1; j<cnt; j++){
+				if(arr[N+1-j][i] == arr[N-j][i]){
+					arr[N+1-j][i] *=2;
+					arr[N-j][i] = 0;
+					check = 1;
+				}
+			}
+			
+			if(check == 0)
+				break;
+		}
+	}
+}
+
+void dfs(int cnt) {
+	if (cnt == 5) {
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= N; j++) {
+				ans = arr[i][j] < ans ? ans : arr[i][j];
+			}
+		}
+
+		return;
+	}
+
+	int prev_state[21][21];
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			prev_state[i][j] = arr[i][j];
+		}
+	}
+
+	move_left();
+	dfs(cnt + 1);
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			arr[i][j] = prev_state[i][j];
+		}
+	}
+
+	move_right();
+	dfs(cnt + 1);
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			arr[i][j] = prev_state[i][j];
+		}
+	}
+
+	move_up();
+	dfs(cnt + 1);
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			arr[i][j] = prev_state[i][j];
+		}
+	}
+
+	move_down();
+	dfs(cnt + 1);
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			arr[i][j] = prev_state[i][j];
+		}
+	}
+
+}
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	dfs(0);
+	/*
+	move_left();
+	for(int i=1; i<=N; i++){
+		for(int j=1; j<=N; j++){
+			cout << arr[i][j] << ' ';
+		}
+		cout << '\n';
+	}
+	*/
+	cout << ans;
+
+	return 0;
+}

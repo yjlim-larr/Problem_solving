@@ -1,0 +1,95 @@
+#include<iostream>
+#include<cstring>
+#include<queue>
+//#pragma warning(disable:4996)
+using namespace std;
+
+const int n_ = 60;
+const int INF = 2100000000;
+int N, M;
+int f[n_][n_];
+int parent[n_];
+int max_flow = 0;
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		getchar();
+		char a, b;
+		int from, to, c;
+		scanf("%c %c %d", &a, &b, &c);
+
+		if ('Z' >= a)
+			from = a - 'A' + 1;
+		else
+			from = a - 'a' + 30;
+
+		if ('Z' >= b)
+			to = b - 'A' + 1;
+		else
+			to = b - 'a' + 30;
+
+		f[from][to] += c;
+		f[to][from] += c;
+	}
+
+	for (;;) {
+		bool check = 0;
+		memset(parent, 0, sizeof(parent));
+		queue<pair<int, int>> q;
+		q.push({ 1, INF });
+		parent[1] = 1;
+
+		for (;;) {
+			int size = q.size();
+			if (size == 0) break;
+			for (int i = 0; i < size; i++) {
+				pair<int, int> prev = q.front();
+				q.pop();
+
+				if (prev.first == 'Z' - 'A' + 1) {
+					//도착.
+					int state = prev.first;
+					int num = prev.second;
+					check = 1;
+					max_flow += num;
+
+					for (;;) {
+						if (parent[state] != state) {
+							f[parent[state]][state] -= num;
+							f[state][parent[state]] += num;
+							state = parent[state];
+						}
+						else
+							break;
+					}
+
+					for (;;) {
+						if (q.empty() != 1)
+							q.pop();
+						else
+							break;
+					}
+
+					break;
+				}
+
+				for (int i = 1; i < n_; i++) {
+					if (parent[i] == 0 && f[prev.first][i] > 0) {
+						//방문한적이없다.
+						parent[i] = prev.first;
+						int t = prev.second < f[prev.first][i] ? prev.second : f[prev.first][i];
+						q.push({ i,t });
+					}
+				}
+			}
+		}
+
+		if (check == 0)
+			break;
+	}
+
+	cout << max_flow;
+	return 0;
+}

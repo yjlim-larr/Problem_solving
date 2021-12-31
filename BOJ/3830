@@ -1,0 +1,107 @@
+#include <iostream>
+#include<utility>
+#include<algorithm>
+using namespace std;
+
+pair<int,int> info[100001]; // second은 info[idx].first가 idx 보다 info[idx].second만큼 무겁다.
+int r_n[100001] = {0,};
+int N, M;
+
+
+pair<int,int> find(int prev){
+	int mass = 0;
+	for(;;){
+		if(prev == info[prev].first){
+			pair<int,int> p;
+			p.first = prev;
+			p.second = mass;
+			return p;
+		}
+		else{
+			mass += info[prev].second;
+			prev = info[prev].first;
+		}
+	}
+}
+
+
+int joint(int p1, int p2, int mass){
+	//p2 > p1이고 mass 만큼 무겁다.
+	//p1 + r1.second = r1.first
+	//p2 + r2.second = r2.first
+	pair<int,int> r1 = find(p1);
+	pair<int,int> r2 = find(p2);
+	
+	if(r_n[r1.first] > r_n[r2.first]){
+		info[r2.first].first = r1.first;
+		info[r2.first].second = r1.second - r2.second - mass;//r1.mass = r2.mass + info[r2].second;
+	}else if(r_n[r1.first] < r_n[r2.first]){
+		info[r1.first].first = r2.first;
+		info[r1.first].second = r2.second - r1.second + mass;//r2.mass
+	}else{
+		info[r2.first].first = r1.first;
+		info[r2.first].second = r1.second - r2.second - mass;//r1.mass = r2.mass + info[r2].second;
+		r_n[r1.first]++;
+	}
+	
+	return 1;
+}
+
+
+
+int query(int p1, int p2){
+	pair<int,int> r1 = find(p1);
+	pair<int,int> r2 = find(p2);
+	if(r1.first != r2.first){
+		return -1e9;
+	}
+	
+	return (r1.second - r2.second);
+}
+
+
+
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+	for(;;){
+		cin >> N >> M;
+		
+		for(int i=1; i<=N; i++){
+			info[i].first = i;
+			info[i].second = 0;
+			
+			r_n[i] = 0;
+		}
+		
+		for(int i=1; i<=N; i++){
+			info[i].first = i;
+		}
+		
+		for(int i=0; i<M; i++){
+			char c;
+			int a,b,w;
+			cin >> c;
+			
+			if(c == '!'){
+				cin >> a >> b >>w;
+				joint(a,b,w);
+			}else{
+				cin >> a >> b;
+				int ret = query(a,b); // b - a
+				
+				if(ret == -1e9){
+					cout << "UNKNOWN" << '\n';
+				}else{
+					cout << ret << '\n';
+				}
+			}
+			
+		}
+		
+		
+		if(N ==0 && M == 0){
+			break;
+		}
+	}
+	return 0;
+}

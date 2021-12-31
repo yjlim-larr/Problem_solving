@@ -1,0 +1,68 @@
+#include<iostream>
+#include<vector>
+#include<utility>
+#include<algorithm>
+using namespace std;
+
+const int n_ = 100001;
+int N, M;
+int info[n_];
+vector<int> tree[4* n_];
+
+void init(int left, int right, int prev){
+	if(left == right){
+		tree[prev].push_back(info[left]);
+		return;
+	}
+	
+	int mid = (left + right)/2;
+	init(left, mid, prev*2);
+	init(mid+1, right, prev*2 +1);
+	
+	int s = tree[prev*2].size();
+	for(int i=0; i<s; i++){
+		tree[prev].push_back(tree[prev*2][i]);
+	}
+	
+	s = tree[prev*2 + 1].size();
+	for(int i=0; i<s; i++){
+		tree[prev].push_back(tree[prev*2 + 1][i]);
+	}
+	
+	sort(tree[prev].begin(), tree[prev].end(), less<int>());
+	
+	return;
+}
+
+int query(int left, int right, int prev, int start, int goal, int num){
+	if(right < start || goal < left)
+		return 0;
+		
+	if(start <= left && right <= goal){
+		int idx = upper_bound(tree[prev].begin(), tree[prev].end(), num) - tree[prev].begin();
+		return tree[prev].size() - idx;
+	}
+	
+	int mid = (left + right)/2;
+	int ret = query(left, mid, prev*2, start, goal, num) + query(mid + 1, right, prev*2 + 1, start, goal, num);
+	return ret;
+}
+
+int main(){
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+	cin >> N;
+	for(int i=1; i<=N; i++){
+		cin >> info[i];
+	}
+	init(1, N,1);
+	
+	cin >> M;
+	for(int i=0; i<M; i++){
+		int a, b, c;
+		cin >> a >> b >> c;
+		
+		cout << query(1,N,1, a,b,c) <<'\n';
+	}
+	
+	return 0;
+}

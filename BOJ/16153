@@ -1,0 +1,62 @@
+#include <cstdio>
+#include <memory.h>
+using namespace std;
+typedef long long ll;
+
+int dp[31][10001];
+int bit[31];
+int mav[31];
+int miv[31];
+int a, b;
+
+int go(int o, int mo){
+	if(o == -1) {
+		if(mo == 0) return 1;
+		return 0;
+	}
+	if(dp[o][mo] != -1) return dp[o][mo];
+	int sum = go(o - 1, (mo + (1 << o)) % a);
+	if(!bit[o]) sum += go(o - 1, mo);
+	
+	return dp[o][mo] = sum;
+}
+
+int go2(int o, int to) {
+	if(to + (ll)miv[o] > b) return 0;
+	if(to + (ll)mav[o] <= b) return go(o, to % a);
+	
+	int sum = go2(o - 1, (to + (1 << o)));
+	if(!bit[o]) sum += go2(o - 1, to);
+	return sum;
+}
+
+int main() {
+	int n, t, che = 0, cnt = 0;
+	scanf("%d %d %d", &n, &a, &b);
+	memset(dp, -1, sizeof(dp));
+
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &t);
+		bit[t] = 1;
+		che |= 1 << t;
+	}
+	
+	if (a > 10000) {
+		for(ll i = a; i <= b; i += a)
+			if((i & (ll)che) == (ll)che) cnt++;
+		return !printf("%d", cnt);
+	}
+	
+	for(int i = 0; i < 31; i++) {
+		mav[i] = 1 << i;
+		if(i) mav[i] += mav[i - 1];
+		
+		miv[i] = (1 << i) * bit[i];
+		if(i) miv[i] += miv[i - 1];
+	}
+	
+	cnt = go2(30, 0);
+	if(n == 0) cnt--;
+	
+	printf("%d", cnt);
+}

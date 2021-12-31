@@ -1,0 +1,81 @@
+#include<iostream>
+using namespace std;
+
+
+int tree[400001];
+bool lazy[400001];
+
+
+int update(int left, int right, int prev, int start, int goal) {
+	if (lazy[prev] == 1) {
+		lazy[prev] = 0;
+		tree[prev] = (right - left + 1) - tree[prev];
+
+		if (left != right) {
+			lazy[prev * 2 + 1] = lazy[prev * 2 + 1] ^ 1;
+			lazy[prev * 2] = lazy[prev * 2] ^ 1;
+		}
+	}
+
+	if (goal < left || right < start)
+		return tree[prev];
+
+	if (start <= left && right <= goal) {
+		lazy[prev] = 0;
+		tree[prev] = (right - left + 1) - tree[prev];
+		if (left != right) {
+			lazy[prev * 2 + 1] = lazy[prev * 2 + 1] ^ 1;
+			lazy[prev * 2] = lazy[prev * 2] ^ 1;
+		}
+		return tree[prev];
+	}
+
+	int mid = (left + right) / 2;
+	tree[prev] = update(left, mid, prev * 2, start, goal) + update(mid + 1, right, prev * 2 + 1, start, goal);
+	return tree[prev];
+}
+
+
+int query(int left, int right, int prev, int start, int goal) {
+	if (lazy[prev] == 1) {
+		lazy[prev] = 0;
+		tree[prev] = (right - left + 1) - tree[prev];
+
+		if (left != right) {
+			lazy[prev * 2 + 1] = lazy[prev * 2 + 1] ^ 1;
+			lazy[prev * 2] = lazy[prev * 2] ^ 1;
+		}
+	}
+
+	if (right < start || goal < left)
+		return 0;
+
+	if (start <= left && right <= goal) {
+		return tree[prev];
+	}
+
+	int mid = (left + right) / 2;
+	return query(left, mid, prev * 2, start, goal) + query(mid + 1, right, prev * 2 + 1, start, goal);
+}
+
+int N, M;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	cin >> N >> M;
+	for (int i = 0; i < M; i++) {
+		int a, b, c;
+		cin >> a >> b >> c;
+
+		if (a == 0)
+			update(1, N, 1, b, c);
+		else
+			cout << query(1, N, 1, b, c) << '\n';
+
+	}
+
+	return 0;
+}

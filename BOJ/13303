@@ -1,0 +1,127 @@
+#include<iostream>
+#include<queue>
+#include<algorithm>
+using namespace std;
+
+struct info {
+	int x;
+	int ly;
+	int hy;
+};
+
+struct state {
+	int x;
+	int y;
+	int n; //현재 장애물 번호.
+	int l; // 이동거리.
+};
+
+int N;
+int start, goal;
+struct info info[100001];
+queue<struct state> q;
+vector<pair<int, int>> v;
+
+bool compare(struct info s1, struct info s2) {
+	return s1.x < s2.x;
+}
+
+bool compare2(pair<int,int> p1, pair<int, int> p2) {
+	if (p1.first == p2.first)
+		return p1.second < p2.second;
+	return p1.first < p2.first;
+}
+
+int main() {
+	cin >> N;
+	cin >> start >> goal;
+
+	for (int i = 0; i < N; i++)
+		cin >> info[i].x >> info[i].ly >> info[i].hy;
+
+	sort(info, info + N, compare);
+	
+	struct state s;
+	s.x = 0;
+	s.y = start;
+	s.n = 0;
+	s.l = 0;
+	q.push(s);
+	
+	for (;;) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			struct state prev = q.front();
+			q.pop();
+
+			if (prev.n == -1) { //끝에도달.
+				v.push_back({ prev.l, prev.y });
+				continue;
+			}
+
+			bool check = 0;
+			for (int j = prev.n; j < N; j++) {
+				if (info[j].x > goal)
+					break;
+				
+				if (info[j].ly <= prev.y && info[j].hy >= prev.y) {
+					check = 1;
+					//분기.
+					int len = info[j].x - prev.x;
+					struct state next;
+					next.x = info[j].x;
+					next.n = j + 1;
+					//1
+					next.y = info[j].ly;
+					next.l = prev.l + (len + prev.y - info[j].ly);
+					q.push(next);
+					//2
+					next.y = info[j].hy;
+					next.l = prev.l + (len + info[j].hy - prev.y);
+					q.push(next);
+
+					break;
+				}
+			}
+
+			if (check == 0) {
+				//분기없이 도달.
+				int len = goal - prev.x;
+				struct state next;
+				next.x = goal;
+				next.n = -1;
+				next.l = prev.l + len;
+				next.y = prev.y;
+
+				q.push(next);
+			}
+		}
+	}
+
+	vector<int> v2;
+	sort(v.begin(), v.end(), compare2);
+	int min = v[0].first;
+	int pre = 0;
+
+	cout << min << '\n';
+	for (vector <pair<int, int>>::iterator iterpos = v.begin(); iterpos != v.end();
+		iterpos++) {
+		if ((*iterpos).first == min && pre != (*iterpos).second) {
+			v2.push_back((*iterpos).second);
+			pre = (*iterpos).second;
+		}
+
+		if ((*iterpos).first > min)
+			break;
+	}
+
+	int size = v2.size();
+	cout << size << ' ';
+	for (int i = 0; i < size; i++) {
+		cout << v2[i] << ' ';
+	}
+	
+	return 0;
+}

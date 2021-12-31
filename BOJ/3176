@@ -1,0 +1,124 @@
+#include <iostream>
+#include<vector>
+using namespace std;
+
+typedef long long ll;
+
+
+const int n_ = 100001;
+int level[n_];
+int dp[n_][21];
+ll dist_min[n_][21];
+ll dist_max[n_][21];
+vector<pair<ll,ll>> v[n_];
+int N, M, K;
+
+void dfs(int prev, int pre, ll d, ll MIN, ll MAX, int lv){
+	level[prev] = lv;
+	dp[prev][0] = pre;
+	dist_min[prev][0] = d;
+	dist_max[prev][0] = d;
+	
+	for(int i=1; i<=20; i++){
+		int next = dp[prev][i-1];
+		
+		if(dp[next][i-1] != 0){
+			dp[prev][i] = dp[next][i-1];
+			dist_min[prev][i] = dist_min[prev][i-1] < dist_min[next][i-1] ? 
+										dist_min[prev][i-1] : dist_min[next][i-1];
+										
+			dist_max[prev][i] = dist_max[prev][i-1] > dist_max[next][i-1] ? 
+										dist_max[prev][i-1] : dist_max[next][i-1];
+		}else{
+			dp[prev][i] = 1;
+			dist_min[prev][i] = MIN;
+			dist_max[prev][i] = MAX;
+		}
+		
+	}
+	
+	
+	int size = v[prev].size();
+	for(int i=0; i<size; i++){
+		if(level[v[prev][i].first] == 0){
+			MIN = MIN < v[prev][i].second ? MIN : v[prev][i].second;
+			MAX = MAX < v[prev][i].second ? v[prev][i].second : MAX;
+			dfs(v[prev][i].first, prev, v[prev][i].second, MIN, MAX, lv+1);	
+		}
+	}
+}
+
+
+
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+	for(int i=1; i<=N; i++){
+		for(int j=0; j<=20; j++){
+			dist_min[i][j] = 1e11;
+		}
+	}
+	
+	cin >> N;
+	for(int i=0; i<N-1; i++){
+		int a, b;
+		ll c;
+		cin >> a >> b >> c;
+		v[a].push_back({b,c});
+		v[b].push_back({a,c});
+	}
+	
+	dfs(1, 0, 0, 1e11, 0, 1);
+	dp[1][0] = 1;
+	
+	cin >> M;
+	for(int k=0; k<M; k++){
+		int a, b;
+		cin >> a >> b;
+		
+		ll MIN = 1e11;
+		ll MAX = 0;
+		int lv1 = level[a];
+		int lv2 = level[b];
+		
+		if(lv1 < lv2){
+			swap(a,b);
+		}
+		int cmp = abs(lv1 - lv2);
+		
+		while(cmp != 0){
+			ll p = 2;
+			for(int i=1;;i++){
+				if(cmp < p){
+					p/=2;
+					cmp -=p;
+					MIN = dist_min[a][i-1] < MIN ? dist_min[a][i-1] : MIN;
+					MAX = dist_max[a][i-1] > MAX ? dist_max[a][i-1] : MAX;
+					a = dp[a][i-1];
+					break;
+				}
+				p*=2;
+			}
+		}
+		
+		while(a != b){
+			for(int i=1;;i++){
+				if(dp[a][i] == dp[b][i]){
+					MIN = dist_min[a][i-1] < MIN ? dist_min[a][i-1] : MIN;
+					MAX = dist_max[a][i-1] > MAX ? dist_max[a][i-1] : MAX;
+					
+					MIN = dist_min[b][i-1] < MIN ? dist_min[b][i-1] : MIN;
+					MAX = dist_max[b][i-1] > MAX ? dist_max[b][i-1] : MAX;
+					
+					a = dp[a][i-1];
+					b = dp[b][i-1];
+					break;
+				}
+			}
+		}
+		
+		cout << MIN << ' ' << MAX << '\n';
+	}
+	
+	return 0;
+}

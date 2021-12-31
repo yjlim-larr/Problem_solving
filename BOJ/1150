@@ -1,0 +1,89 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+typedef long long ll;
+
+struct state {
+	int start;
+	int end;
+	int len;
+	state(int a, int b, int c) :start(a), end(b), len(c) {};
+};
+
+struct compare {
+	bool operator()(struct state a, struct state b) {
+		return a.len > b.len;
+	}
+};
+
+int N, K;
+int info[100001];
+int table[100001] = { 0, };
+priority_queue<struct state, vector<struct state>, compare> q;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	cin >> N >> K;
+	cin >> info[0];
+	for (int i = 1; i < N; i++) {
+		cin >> info[i];
+		q.push({ i - 1, i, info[i] - info[i - 1] });
+	}
+
+	int ans = 0;
+	int cnt = 0;
+	while (!q.empty()) {
+		struct state prev = q.top();
+		q.pop();
+
+		if (table[prev.start] == 0 && table[prev.end] == 0) {
+			table[prev.start] = 1;
+			table[prev.end] = 1;
+			ans += prev.len;
+			cnt += 1;
+
+			int from = -1, to = -1;
+			for (int i = prev.start-1; i >= 0; i--) {
+				if (table[i] == 0) {
+					from = i;
+					break;
+				}
+			}
+
+			for (int j = prev.end + 1; j < N; j++) {
+				if (table[j] == 0) {
+					to = j;
+					break;
+				}
+			}
+
+			//from ~ to 에 속해진 것들을 다 뺴야함.
+			if (from != -1 && to != -1) {
+				int ans = info[to] - info[from];
+
+				for (int i = from + 1; i < to; i++) {
+					if (table[i] == 1) {
+
+						for (int j = i + 1; j < to; j++) {
+							if (table[j] == 1) {
+								ans -= (2*(info[j] - info[i]));
+								i = j;
+								break;
+							}
+						}
+					}
+				}
+				q.push({ from, to, ans});
+			}
+		}
+
+		if (cnt == K)
+			break;
+	}
+
+	cout << ans;
+	return 0;
+}

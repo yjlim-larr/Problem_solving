@@ -1,0 +1,153 @@
+#include <iostream>
+#include<vector>
+using namespace std;
+
+typedef long long ll;
+
+const int n_ = 100001;
+int dp[n_][21];
+ll dist[n_][21];
+int level[n_];
+vector<pair<ll, ll>> v[n_];
+int N, M;
+
+void dfs(int prev, int pre, ll d, ll e, int lv){
+	level[prev] = lv;
+	dp[prev][0] = pre;
+	dist[prev][0] = d;
+	
+	for(int i=1; i<=20; i++){
+		int next = dp[prev][i-1];
+		
+		if(dp[next][i-1] != 0){
+			dp[prev][i] = dp[next][i-1];
+			dist[prev][i] = dist[prev][i-1] + dist[next][i-1];
+		}else{
+			dp[prev][i] = 1;
+			dist[prev][i] = e; //root까지.
+		}
+	}
+	
+	int size = v[prev].size();
+	for(int i=0; i<size; i++){
+		if(level[v[prev][i].first] == 0){
+			dfs(v[prev][i].first, prev, v[prev][i].second, e + v[prev][i].second, lv + 1);
+		}
+	}
+}
+
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+	cin >> N;
+	for(int i=0; i<N-1; i++){
+		int a, b;
+		ll c;
+		cin >> a >> b >> c;
+		v[a].push_back({b,c});
+		v[b].push_back({a,c});
+	}
+	
+	dfs(1,0,0,0,1);
+	
+	cin >> M;
+	for(int i=0; i<M; i++){
+		int a, b, c, d;
+		cin >> d;
+		cin >> a >> b;
+		
+		int p_a = a;
+		int p_b = b;
+		int lv1 = level[a];
+		int lv2 = level[b];
+		
+		if(lv1 < lv2)
+			swap(a,b);
+		int cmp = abs(lv1 - lv2);
+		ll total = 0;
+		
+		while(cmp != 0){
+			ll p = 2;
+			
+			for(int i=1;;i++){
+				if(p > cmp){
+					p/=2;
+					total += dist[a][i-1];
+					a = dp[a][i-1];
+					cmp -= p;
+					
+					break;
+				}else
+					p*=2;
+			}
+		}
+			
+		while(a != b){
+			for(int i = 1;;i++){
+				if(dp[a][i] == dp[b][i]){
+					total += dist[a][i-1];
+					a = dp[a][i-1];
+					
+					total += dist[b][i-1];
+					b = dp[b][i-1];
+					
+					break;
+				}
+			}	
+		}
+		
+		if(d == 1){
+			cout << total << '\n';
+			continue;
+		}
+		
+		
+		cin >> c;
+		int left = level[p_a] - level[a];
+		int right = level[p_b] - level[a];
+		
+		
+		if(left + 1 <= c){
+			c = left + right - c + 1;
+			
+			while(c!=0){
+				ll p = 2;
+				
+				for(int i=1;;i++){
+					if(c < p){
+						p/=2;
+						c -= p;
+						p_b = dp[p_b][i-1];
+						
+						break;
+					}
+					p*=2;
+				}
+			}
+			
+			cout <<  p_b << '\n';
+		}else{
+			c -= 1;
+			
+			while(c != 0){
+				ll p = 2;
+				
+				for(int i=1;;i++){
+					if(c < p){
+						p/=2;
+						c -=p;
+						p_a = dp[p_a][i-1];
+						
+						break;
+					}
+					
+					p*=2;
+				}
+			}
+			
+			cout << p_a << '\n';
+		}
+	}
+	
+	return 0;
+}

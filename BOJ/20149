@@ -1,0 +1,75 @@
+#include <iostream>
+#include<cstdio>
+using namespace std;
+typedef long long ll;
+
+double ccw(pair<double,double> A, pair<double,double> B, pair<double,double> C){
+	return (A.first*B.second + B.first*C.second + C.first*A.second - (A.second*B.first + B.second*C.first + C.second*A.first));
+}
+
+pair<double,double> a,b,c,d;
+
+ll judge(pair<double,double> A, pair<double,double> B, pair<double,double> C, pair<double,double> D){
+	double AB = ccw(A, B, C) * ccw(A, B, D);
+	double CD = ccw(C, D, A) * ccw(C, D, B);
+	
+	if(AB == 0 && CD == 0)
+		return (A <= D && C <= B);
+	return AB <= 0 && CD <= 0;
+}
+
+
+int main() {
+	cin >> a.first >> a.second;
+	cin >> b.first >> b.second;
+	cin >> c.first >> c.second;
+	cin >> d.first >> d.second;
+	
+	if(a > b)
+		swap(a,b);
+	if(c > d)
+		swap(c,d);
+	
+	ll ret = judge(a, b, c, d);
+	
+	if(ret == 1){
+		cout << "1" <<'\n';
+		
+		double p = a.second - b.second;
+		double q = a.first - b.first;
+		
+		double r = c.second - d.second;
+		double t = c.first - d.first;
+		
+		if(1LL * p * t == 1LL * r * q){
+			if(b == c)
+				cout << b.first << ' ' << b.second;	
+			else if(a == d)
+				cout << a.first << ' ' << a.second;
+			
+			return 0;
+		}
+		
+		// p/q(x - a.first) + a.second == r/t(x - c.first) + c.second;
+		// p/q(x - a.first) - r/t(x - c.first) == c.second - a.second;
+		// p*t(x - a.first) - r*q(x - c.first) == (c.second-a.second)*q*t;
+		// (p*t - r*q)*x == (c.second-a.second)*q*t + p*t*a.first - r*q*c.first;
+		// x == ((c.second-a.second)*q*t + p*t*a.first - r*q*c.first) / (p*t - r*q);
+		
+		double x = (double(c.second-a.second)*q*t + p*t*double(a.first) - r*q*double(c.first)) / (p*t - r*q);
+		double y = 0.1;
+		
+		if(q != 0)
+			y = p/q*(x-a.first) + a.second;
+		else if(t != 0)
+			y = r/t*(x-c.first) + c.second;
+			
+			
+		printf("%.10lf %.10lf", x, y);
+	}else{
+		cout << "0" << '\n';
+	}
+	
+	
+	return 0;
+}

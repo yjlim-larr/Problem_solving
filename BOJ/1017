@@ -1,0 +1,122 @@
+#include<iostream>
+#include<vector>
+#include<cstring>
+#include<algorithm>
+//#pragma warning(disable:4996)
+using namespace std;
+
+int N;
+int info[51];
+bool table[2001];
+vector<int> v[51];
+bool visit[51];
+int child[51];
+int parent[51];
+int connect;
+vector<int> ans;
+
+
+bool dfs(int prev) {
+	if (prev == connect || prev == 1)
+		return 0;
+	if (visit[prev])
+		return 0;
+
+	visit[prev] = 1;
+	int size = v[prev].size();
+
+	for (int i = 0; i < size; i++) {
+		if (v[prev][i] == parent[prev]) //현재 연결을 제외.
+			continue;
+
+		if (v[prev][i] != 1 && v[prev][i] != connect && 
+			(child[v[prev][i]] == 0 || dfs(child[v[prev][i]]))) {
+			child[v[prev][i]] = prev;
+			parent[prev] = v[prev][i];
+
+			child[prev] = v[prev][i];
+			parent[v[prev][i]] = prev;
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N;
+	for (int i = 1; i <= N; i++) 
+		cin >> info[i];
+
+	for (int i = 2; i <= 2000; i++) 
+		if (table[i] == 0) 
+			for (int k = 2; k*i <= 2000; k++) 
+				table[k*i] = 1;
+		
+	for (int i = 1; i <= N; i++) 
+		for (int j = 1; j <= N; j++) 
+			if (i != j && table[info[i] + info[j]] == 0) 
+				v[i].push_back(j);
+
+
+	int len = v[1].size();
+	for (int k = 0; k < len; k++) {
+		memset(parent, 0, sizeof(parent));
+		memset(child, 0, sizeof(child));
+		connect = v[1][k];
+
+		parent[1] = connect;
+		child[connect] = 1;
+		parent[connect] = 1;
+		child[1] = connect;
+
+		for (int i = 2; i <= N; i++) {
+			if (i == connect)
+				continue;
+
+			if (child[i] != 0 && parent[child[i]] == i) {
+				parent[i] = child[i];
+				continue;
+			}
+
+			int size = v[i].size();
+			for (int j = 0; j < size; j++) { //연결대상을 찾음
+				if (v[i][j] != connect && v[i][j] != 1 &&
+					(child[v[i][j]] == 0 || dfs(child[v[i][j]]))) {
+					child[v[i][j]] = i;
+					parent[i] = v[i][j];
+
+					child[i] = v[i][j];
+					parent[v[i][j]] = i;
+					memset(visit, 0, sizeof(visit));
+					break;
+				}
+			}
+				
+		}
+
+		bool check = 0;
+		for (int i = 1; i <= N; i++) {
+			if (child[parent[i]] == i) {}
+			else {
+				check = 1;
+				break;
+			}
+		}
+
+		if(check == 0)
+			ans.push_back(info[connect]);
+	}
+
+	if (ans.size() == 0)
+		cout << "-1";
+	else {
+		sort(ans.begin(), ans.end());
+		for (int i = 0; i < ans.size(); i++) 
+			cout << ans[i] << ' ';
+	}
+
+	return 0;
+}

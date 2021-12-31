@@ -1,0 +1,93 @@
+#include<iostream>
+#include<vector>
+#include<utility>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+
+int T, N;
+ll tree[75001 * 4];
+pair<int, int> info[75001];
+
+bool compare(pair<int, int> p1, pair<int, int> p2) {
+	if (p1.first == p2.first)
+		return p1.second > p2.second;
+
+	return p1.first < p2.first;
+}
+
+ll update(int left, int right, int prev, int pos) {
+	if (pos < left || right < pos)
+		return tree[prev];
+
+	if (left == right ){
+		if (left == pos) {
+			tree[prev] += 1;
+		}
+			
+		return tree[prev];
+	}
+
+	int mid = (left + right) / 2;
+	tree[prev] = update(left, mid, prev * 2, pos) + update(mid + 1, right, prev * 2 + 1, pos);
+	return tree[prev];
+}
+
+
+
+ll query(int left, int right, int prev, int start, int goal) {
+	//start~goal 범위에서 n보다 큰 y의 개수
+	if (right < start || goal < left) {
+		return 0;
+	}
+
+	if (start <= left && right <= goal) {
+		return tree[prev];
+	}
+
+	int mid = (left + right) / 2;
+	ll ret = query(left, mid, prev * 2, start, goal) + query(mid + 1, right, prev * 2 + 1, start, goal);
+
+	return ret;
+}
+
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	cin >> T;
+
+	for (int t = 0; t < T; t++) {
+		cin >> N;
+		vector<int> v;
+		for (int i = 1; i <= N; i++) {
+			cin >> info[i].first >> info[i].second;
+			v.push_back(info[i].second);
+		}
+
+		sort(v.begin(), v.end(), less<int>());
+		v.erase(unique(v.begin(), v.end()), v.end());
+
+		for (int i = 1; i <= N; i++) {
+			int idx2 = lower_bound(v.begin(), v.end(), info[i].second) - v.begin();
+			info[i].second = idx2 + 1;
+		}
+
+		int size = v.size(); 
+		sort(info + 1, info + N + 1, compare);
+		fill(tree, tree + ((size + 1) * 4), 0);
+		ll ans = 0;
+		for (int i = 1; i <= N; i++) {
+			//idx가 0부터 시작.
+			if (info[i].second + 1 <= N) {
+				ans += query(1, size, 1, info[i].second, size); //이미 방문한 점들 중에서 y값이 큰것들.
+			}
+			update(1, size, 1, info[i].second);
+		}
+		cout << ans << '\n';
+	}
+
+	return 0;
+}

@@ -1,0 +1,43 @@
+#include<iostream>
+using namespace std;
+typedef long long ll;
+
+ll mu[1000001];
+
+void init() {
+	mu[1] = 1;
+	for (int i = 1; i < 1000001; i++) {
+		for (int j = 2 * i; j < 1000001; j += i) {
+			mu[j] -= mu[i];
+		}
+	}
+}
+
+int main() {
+	ll K;
+	cin >> K;
+	init();
+
+	ll left = 1;
+	ll right = 1700000000;
+	ll ret = right;
+	while (left <= right) {
+		ll mid = (left + right) / 2;
+		ll ans = 0;
+
+		for (ll i = 1; i * i <= mid; i++) {
+			ans += (mu[i] * (mid / (i * i)));
+		}
+
+		if (ans >= K) {
+			ret = ret < mid ? ret : mid;
+			right = mid - 1;
+		}
+		else {
+			left = mid + 1;
+		}
+	}
+
+	cout << ret;
+	return 0;
+}

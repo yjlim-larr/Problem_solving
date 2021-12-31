@@ -1,0 +1,86 @@
+#include<iostream>
+#include<cstring>
+#include<queue>
+//#pragma warning(disable:4996)
+using namespace std;
+
+const int n_ = 802;
+const int INF = 2100000000;
+
+int N, M;
+int f[n_][n_];
+int parent[n_];
+int start = 1, goal = 2;
+int max_flow = 0;
+
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M;
+	for (int i = 0; i < M; i++) {
+		int from, to;
+		cin >> from >> to;
+
+		//무방향 그래프.
+		f[from][to + 400] = 1; //in으로 들어갈 땐 400이 필수 ==gate 같은것.
+		f[to][from + 400] = 1;
+	}
+
+	//정점 분할.... 어떤 방식으로 진행 할까?
+	for (int i = 1; i <= N; i++) {
+		f[i + 400][i] = 1; //in -> out으로 방향을 만들어줌.
+	}
+
+	for (;;) {
+		bool check = 0;
+		memset(parent, 0, sizeof(parent));
+		queue<pair<int, int>> q;
+		q.push({ start, INF });
+		parent[start] = start;
+		parent[start + 400] = start + 400;
+
+		while (!q.empty()) {
+			pair<int, int> prev = q.front();
+			q.pop();
+
+			if (prev.first == goal + 400) {
+				//도착.
+				int state = prev.first;
+				check = 1;
+				max_flow += 1;
+
+				for (;;) {
+					if (parent[state] != state) {
+						f[parent[state]][state] -= 1;
+						f[state][parent[state]] += 1;
+						state = parent[state];
+					}
+					else
+						break;
+				}
+
+				for (;;) {
+					if (q.empty() != 1)
+						q.pop();
+					else
+						break;
+				}
+
+				break;
+			}
+
+			for (int i = 1; i < n_; i++) { //gate로 들어가야함.
+				if (parent[i] == 0 && f[prev.first][i] > 0) {//방문한적이없다.
+					parent[i] = prev.first;
+					q.push({ i,1 });
+				}
+			}
+		}
+
+		if (check == 0)
+			break;
+	}
+
+	cout << max_flow;
+	return 0;
+}

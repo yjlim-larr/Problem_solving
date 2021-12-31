@@ -1,0 +1,106 @@
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cstdlib>
+using namespace std;
+
+typedef long long ll;
+
+string str;
+int table[10] = { 6, 2, 5, 5, 4, 5, 6, 3, 7, 5};
+ll dp[2][16][201];
+int s = 0;
+
+ll dfs(bool check, int prev, int cnt){
+	// check == 1일때, cnt =100으로 만드는 idx: 가장 작은 바뀌는수
+	// check == 0일때, cnt =100으로 만드는 idx: prev ~ str.size()-1 보다 큰수중 가장 작은 수.
+	if(prev == s){
+		if(check == 1 && cnt == 100)
+			return 0;
+		else
+			return 1e16;
+	}
+	
+	if(dp[check][prev][cnt]== 1e17){
+		dp[check][prev][cnt] = 1e16;
+	
+		char c = str[prev];
+		int a = int(c - '0');
+		ll ret = 1e16;
+		ll p = 1;
+		for(int i = 0; i<s-1-prev; i++){
+			p *= 10;
+		}
+	
+		if(check == 0){
+			ll ans = p * a + dfs(0, prev + 1, cnt);
+			dp[check][prev][cnt] = ans < dp[check][prev][cnt] ? ans : dp[check][prev][cnt];
+			
+			for(ll i = a+1; i<10; i++){
+				int d = table[a] - table[i];
+				ll cmp = dfs(1, prev + 1, cnt + d);
+				
+				if(cmp != 1e16){
+					ans = (i)*p + cmp;
+					dp[check][prev][cnt] = ans < dp[check][prev][cnt] ? ans : dp[check][prev][cnt];
+				}
+			}	
+		}else{
+			for(ll i=0; i<10; i++){
+				int d = table[a] - table[i];
+				ll cmp = dfs(1, prev + 1, cnt + d);
+				
+				if(cmp != 1e16){
+					ll ans = (i)*p + cmp;
+					dp[check][prev][cnt] = ans < dp[check][prev][cnt] ? ans : dp[check][prev][cnt];
+				}
+			}
+		}
+	}
+	
+	return dp[check][prev][cnt];
+}
+
+int main(){
+	cin >> str;
+	
+	for(int i=0;i<16; i++){
+		for(int j=0; j<201; j++){
+			dp[0][i][j] = 1e17;
+			dp[1][i][j] = 1e17;
+		}
+	}
+	
+	char c = str[0];
+	int a = int(c - '0');
+	ll min = 1e16;
+	ll p = 1;
+	s = str.size();
+	for(int i = 0; i < s-1; i++)
+		p *=10;
+	
+	for(ll i=0; i<10; i++){
+		bool check = 1;
+		int d = table[a] - table[i];
+		
+		if(i == a)
+			check = 0;
+		
+		ll cmp = dfs(check, 1, 100 + d);
+		if(cmp != 1e16){
+			ll ret = (i)*p + cmp;
+			if(ret < stoll(str)){
+				ret = p*10 + ret;
+			}
+			min = min < ret ? min : ret;
+		}
+	}
+    
+    if(min == 1e16){
+        cout << p*10;
+        return 0;
+    }
+	
+	cout << min - stoll(str);
+	return 0;
+}

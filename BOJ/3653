@@ -1,0 +1,56 @@
+#include<cstdio>
+#include<cstring>
+
+int T, N, M;
+int tree[200001];
+int info[100001];
+
+void update(int idx, int num) {
+	while (idx <= N + M) {
+		tree[idx] += num;
+		idx += (idx & -idx);
+	}
+}
+
+int find(int idx) {
+	int ret = 0;
+	while (idx > 0) {
+		ret += tree[idx];
+		idx -= (idx & -idx);
+	}
+
+	return ret;
+}
+
+int main() {
+	scanf("%d", &T);
+
+	for (int I = 0; I < T; I++) {
+		scanf("%d %d", &N, &M);
+
+		memset(tree, 0, sizeof(tree));
+
+		int A = 1;
+		for (int i = M + 1; i < N + M + 1; i++) {
+			//M+1 ~ N+M 까지 -> N개.
+			update(i, 1);
+			info[A++] = i;
+		}
+		int min_pos = M + 1; //
+
+		int a;
+		for (int i = 0; i < M; i++) {
+			scanf("%d", &a);
+			//보려는 영화 a.
+
+			printf("%d ", find(info[a]) - 1);
+			update(info[a], -1);
+			info[a] = --min_pos;
+			update(min_pos, 1);
+		}
+
+		printf("\n");
+	}
+
+	return 0;
+}

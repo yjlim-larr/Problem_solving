@@ -1,0 +1,44 @@
+#include<stdio.h>
+#include<iostream>
+#include<algorithm>
+#include<string.h>
+
+using namespace std;
+
+int n, piece[51], cache[51][250001];
+const int INF = 2000000000;
+
+int solve(int pos, int diff) {
+	if (diff > 250000)
+		return -INF;
+	if (n < pos) {
+		if (diff == 0)
+			return 0;
+		else
+			return -INF;
+	}
+	int &ret = cache[pos][diff];
+	if (ret != -1) return ret;
+	ret = -INF;
+	ret = solve(pos + 1, diff);//ret = max(ret, solve(pos+1, diff))를 하면 틀렸다고 합니다.
+	ret = max(ret, solve(pos + 1, diff + piece[pos]));
+	if (piece[pos] > diff)
+		ret = max(ret, diff + solve(pos + 1, piece[pos] - diff));
+	else
+		ret = max(ret, piece[pos] + solve(pos + 1, diff - piece[pos]));
+	return ret;
+}
+
+int main() {
+	int ans;
+	cin >> n;
+	for (int i = 1; i <= n; i++)
+		cin >> piece[i];
+	memset(cache, -1, sizeof(cache));
+	ans = solve(1, 0);
+	if (ans == 0)
+		cout << -1;
+	else
+		cout << ans;
+	return 0;
+}

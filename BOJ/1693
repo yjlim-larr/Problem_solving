@@ -1,0 +1,87 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include<cstring>
+#include<queue>
+using namespace std;
+
+const int MAX = 2100000000;
+
+int DP[100001][18];
+vector<int> v[100001];
+vector<int> g_tree[100001];
+bool table[100001];
+int N;
+
+int DFS(int node, int color) {
+	if (DP[node][color] != -1)
+		return DP[node][color];
+
+	DP[node][color] = color;
+	for (int i = 0; i < g_tree[node].size(); i++) {
+		int ret = MAX;
+		for (int j = 1; j < 18; j++) {
+			if (color == j)
+				continue;
+			if (ret == MAX)
+				ret = DFS(g_tree[node][i], j);
+			else
+				ret = min(ret, DFS(g_tree[node][i], j));
+		}
+		DP[node][color] += ret;
+	}
+	return DP[node][color];
+}
+
+int main()
+{
+	int ans = MAX;
+	scanf("%d", &N);
+
+	memset(DP, -1, sizeof(DP));
+
+	for (int i = 0; i < N - 1; i++) {
+		int a, b;
+		scanf("%d %d", &a, &b);
+		v[a].push_back(b);
+		v[b].push_back(a);
+	}
+
+	int root;
+	for (int i = 1; i <= N; i++)
+		if (v[i].size() == 1) {
+			root = i;
+			break;
+		}
+
+	queue<int> q;
+	q.push(root);
+	table[root] = 1;
+
+	for (;;) {
+		int size = q.size();
+		if (size == 0)
+			break;
+		for (int i = 0; i < size; i++) {
+			int prev = q.front();
+			q.pop();
+			for (int j = 0; j < v[prev].size(); j++) {
+				if (table[v[prev][j]] == 0) {
+					table[v[prev][j]] = 1;
+					g_tree[prev].push_back(v[prev][j]);
+					q.push(v[prev][j]);
+				}
+			}
+		}
+	}
+
+	for (int i = 1; i < 18; i++) {
+		if (ans == MAX)
+			ans = DFS(root, i);
+		else
+			ans = min(ans, DFS(root, i));
+	}
+
+	printf("%d", ans);
+	return 0;
+}

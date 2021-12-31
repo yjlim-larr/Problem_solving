@@ -1,0 +1,45 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+#define MAXN 200020
+#define ll long long
+const ll mod = 1e9 + 7;
+int n;
+ll _sum(vector<ll>&tree, int x) {
+    ll ret = 0;
+    for (int i = x; i > 0; i -= (i&-i)) ret += tree[i];
+    return ret;
+}
+ll sum(vector<ll>&tree, int s, int e) {
+    if (s > e) return 0;
+    return (_sum(tree, e) - _sum(tree, s - 1));
+}
+void update(vector<ll>&tree, int x, ll val) {
+    for (int i = x; i <= MAXN; i += (i&-i)) tree[i] += val;
+}
+int main() {
+    scanf(" %d", &n);
+    vector<ll> a(n + 1,0), tree1(MAXN+1, 0), tree2(MAXN+1, 0), ans(n + 1, 0);
+    for (int i = 1; i <= n; i++) {
+        ll x; scanf(" %lld", &x);
+        x += 1;
+        if (i == 1) {
+            update(tree1, x, (ll)1);
+            update(tree2, x, x);
+        }
+        else {
+            ans[i] += sum(tree2, (int)x + 1, MAXN) - x*sum(tree1, (int)x + 1, MAXN);
+            ans[i] += x*sum(tree1, 1, (int)x - 1) - sum(tree2, 1, (int)x - 1);
+            ans[i] %= mod;
+            update(tree1, x, 1);
+            update(tree2, x, x);
+        }
+    }
+    ll mul = 1;
+    for (int i = 2; i <= n; i++) {
+        mul *= ans[i];
+        mul %= mod;
+    }
+    printf("%lld\n", mul);
+}

@@ -1,0 +1,76 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+const int INF = 210000000;
+char str[2501];
+int table[2501][2501];
+int dp[2501];
+int N;
+
+int check(int start, int end) {
+	//start == end까지 팰린드롬인지
+	if (table[start][end] == 0) {
+		int k = 0;
+
+		for (int i = start; i <= end; i++) {
+			if (table[i][end - k] == 2) {
+				table[start][end] = 2;
+				break;
+			}
+			else if(table[i][end-k] == 1){
+				table[start][end] = 1;
+				break;
+			}
+
+			if (str[i] == str[end - k])
+				k++;
+			else {
+				table[start][end] = 1; //불가능
+				break;
+			}
+		}
+
+		if (k >= end - start + 1) {
+			for (int i = 0; ; i++) {
+				table[start + i][end - i] = 2;
+				if (start + i > end - i)
+					break;
+			}
+		}
+	}
+
+	return table[start][end];
+}
+
+int dfs(int start) {
+	if (start == N)
+		return 0;
+
+	if (dp[start] == -1) {
+		dp[start] = INF;
+
+		for (int i = N - 1; i >= start; i--) {
+			int n = check(start, i); 
+
+			if (n == 2) {
+				// 가능
+				int cmp = dfs(i + 1)+1;
+				dp[start] = dp[start] < cmp ? dp[start] : cmp;
+			}
+		}
+	}
+
+	return dp[start];
+}
+
+int main() {
+	cin >> str;
+	N = strlen(str);
+
+	memset(dp, -1, sizeof(dp));
+	int ret = dfs(0);
+	cout << ret; 
+
+	return 0;
+}

@@ -1,0 +1,80 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#include<cmath>
+#define fst first
+#define snd second
+using namespace std;
+
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> pii;
+
+const int INF = 2100000000; //
+const int MAX_N = 1e5;
+
+int min(int a, int b) {
+	return a > b ? b : a;
+}
+
+int max(int a, int b) {
+	return a < b ? b : a;
+}
+
+int N;
+int map[17][17];
+bool visit_table[17];
+int dp[17][1<<16];
+int total = 1;
+
+int dfs(int start, int prev, int num) {
+	if (visit_table[start] == 1 && prev == start) {
+		if (num == total)
+			return 0;
+		else
+			return INF; //답이 될 수 없다.
+	}
+
+	if (dp[prev][num] == -1) {
+		dp[prev][num] = INF;
+
+		for (int i = 1; i <= N; i++) {
+			if (visit_table[i] == 0 && map[prev][i] != 0) {
+				//방문한 적이 없으며, 갈 수 있다.
+				visit_table[i] = 1;
+
+				int a = 1 << (i - 1);
+				dp[prev][num] = min(dfs(start, i, num + a) + map[prev][i], dp[prev][num]);
+				
+				visit_table[i] = 0;
+			}
+		}
+	}
+
+	return dp[prev][num];
+}
+
+//cnt은 유니크한 상태를 반영해 주지 않는다.
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 1; i <= N; i++) 
+		for (int j = 1; j <= N; j++) 
+			scanf("%d", &map[i][j]);
+
+	//k번 도시에서 출발해서 k번 도시로의 도착.
+	total = 1 << N;
+	total -= 1;
+
+	memset(dp, -1, sizeof(dp));
+	int ret = dfs(1, 1, 0);
+	printf("%d", ret);
+
+	return 0;
+}

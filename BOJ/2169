@@ -1,0 +1,33 @@
+#include <cstdio>
+#include <algorithm>
+#define MIN -123456789
+using namespace std;
+int map[1001][1001];
+int cache[1001][1001][3];
+bool chk[1001][1001];
+int N, M;
+int dir[3][2] = {{0, 1}, {1, 0}, {0, -1}};
+int solve(int x, int y, int d) {
+	if (x == N - 1 && y == M - 1) return map[x][y];
+	int &ret = cache[x][y][d];
+	if (ret != MIN) return ret;
+	for (int i = 0; i < 3; i++) {
+		int xx = x + dir[i][0], yy = y + dir[i][1];
+		if (xx < 0 || xx >= N || yy < 0 || yy >= M || chk[xx][yy]) continue;
+		chk[xx][yy] = 1;
+		ret = max(ret, solve(xx, yy, i) + map[x][y]);
+		chk[xx][yy] = 0;
+	}
+	return ret;
+}
+int main() {
+	scanf("%d%d", &N, &M);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &map[i][j]);
+			cache[i][j][0] = cache[i][j][1] = cache[i][j][2] = MIN;
+		}
+	}
+	chk[0][0] = 1;
+	printf("%d\n", solve(0, 0, 0));
+}

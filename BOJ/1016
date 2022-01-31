@@ -1,0 +1,31 @@
+#include<cstdio>
+#define ll long long
+
+bool table[1000001] = { 0, }; //
+ll start, end;
+
+int main() {
+	scanf("%lld %lld", &start, &end);
+	//이 사이에 수들중... 제곱수의 배수들은 거른다.
+
+	for (ll i = 2; i*i <= end; i++) {
+		ll a = i*i;
+		
+		for (ll j = start/a;; j++) {
+			if (a*j >= start && a * j <= end) {
+				table[a*j - start] = 1;
+			}
+			if (a*j > end)
+				break;
+		}
+	}
+
+	int cnt = 0;
+	for (int i = 0; i <end - start + 1; i++){
+		if(table[i] == 0)
+			cnt++;
+	}
+
+	printf("%d", cnt);
+	return 0;
+}

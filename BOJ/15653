@@ -1,0 +1,132 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<vector>
+#include<utility>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<iostream>
+#include<cmath>
+#define fst first
+#define snd second
+using namespace std;
+
+struct state {
+	pair<int, int> r, b;
+};
+
+int N, M;
+int dx[8] = { 1,-1,0,0,1,-1,1,-1 };
+int dy[8] = { 0,0,1,-1,1,1,-1,-1 };
+char map[11][11];
+pair<int, int > r_pos, b_pos, goal;
+bool table[11][11][11][11];
+
+int main() {
+	cin >> N >> M;
+	for (int i = 1; i <= N; i++) {
+		getchar();
+		for (int j = 1; j <= M; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 'B') {
+				b_pos.first = i;
+				b_pos.second = j;
+			}
+			else if (map[i][j] == 'R') {
+				r_pos.first = i;
+				r_pos.second = j;
+			}
+		}
+	}
+
+	struct state s;
+	s.r = r_pos;
+	s.b = b_pos;
+	queue<struct state> q;
+	table[r_pos.first][r_pos.second][b_pos.first][b_pos.second] = 1;
+	q.push(s);
+
+	for (int t = 1;; t++) {
+		int size = q.size();
+		if (size == 0) break;
+
+		for (int i = 0; i < size; i++) {
+			struct state prev = q.front();
+			q.pop();
+
+			for (int j = 0; j < 4; j++) {
+				int r_k = 0, b_k = 0;
+				bool r_check = 0, b_check = 0;
+
+				for (int k = 1;; k++) {
+					int n_i = prev.r.first + dx[j] * k;
+					int n_j = prev.r.second + dy[j] * k;
+					if (n_i < 1 || n_i > N || n_j < 1 || n_j > M || map[n_i][n_j] == '#'){
+						//범위를 넘어감.
+						r_k = k-1;
+						break;
+					}
+
+					if (map[n_i][n_j] == 'O') {
+						r_check = 1; //꼴~
+						break;
+					}
+				}
+
+				for (int k = 1;; k++) {
+					int n_i = prev.b.first + dx[j] * k;
+					int n_j = prev.b.second + dy[j] * k;
+					if (n_i < 1 || n_i > N || n_j < 1 || n_j > M || map[n_i][n_j] == '#') {
+						//범위를 넘어감.
+						b_k = k - 1;
+						break;
+					}
+
+					if (map[n_i][n_j] == 'O') {
+						b_check = 1; //꼴~
+						break;
+					}
+				}
+
+				if (r_check == 1 && b_check == 0) {
+					cout << t;
+					return 0;
+				}
+				else if (r_check == 0 && b_check == 0) {
+					//빨구슬과 파란 구슬의 이동경로가 겹침.
+					if (prev.r.first + dx[j] * r_k == prev.b.first + dx[j] * b_k
+						&& prev.r.second + dy[j] * r_k == prev.b.second + dy[j] * b_k) {
+						//누가 우선될까?
+						if (prev.b.first * dx[j] + prev.b.second * dy[j]
+			> prev.r.first * dx[j] + prev.r.second * dy[j]) {
+							//b가 먼저 도달.
+							r_k -= 1;
+						}
+						else {
+							//r가 먼저 도달.
+							b_k -= 1;
+						}
+					}
+
+					if (r_k == 0 && b_k == 0)
+						continue;
+
+					struct state next;
+					next.r.first = prev.r.first + dx[j] * r_k;
+					next.r.second = prev.r.second + dy[j] * r_k;
+					next.b.first = prev.b.first + dx[j] * b_k;
+					next.b.second = prev.b.second + dy[j] * b_k;
+					if (table[next.r.first][next.r.second][next.b.first][next.b.second] != 1) {
+						table[next.r.first][next.r.second][next.b.first][next.b.second] = 1;
+						q.push(next);
+					}
+				}
+			}
+		}
+	}
+
+	int ret = -1;
+	cout << ret;
+	return 0;
+}

@@ -1,0 +1,67 @@
+#include<cstdio>
+#include<vector>
+#include<utility>
+#include<queue>
+#define ll long long
+#define ull unsigned long long
+using namespace std;
+
+int N, M, K;
+vector<int> v[101001]; // 100000 + 1 + 1000(하이퍼튜브)
+
+
+int main() {
+	scanf("%d %d %d", &N, &K, &M);
+
+	if (N == 1){
+		printf("1");
+		return 0;
+	}
+
+	for (int i = 0; i < M; i++) {
+		int a;
+		for (int j = 0; j < K; j++) {
+			scanf("%d", &a);
+			v[100001 + i].push_back(a);
+			v[a].push_back(100001 + i);
+		}
+	}
+
+	queue<pair<int,int>> q;
+	bool visit_table[101001] = { 0, };
+	q.push({ 1,1 });
+	visit_table[1] = 1;
+	for (;;) {
+		int size = q.size();
+		if (size == 0)
+			break;
+		for (int i = 0; i < size; i++) {
+			pair<int,int> prev = q.front();
+			q.pop();
+			if (prev.first > 100000) {
+				//지금 하이퍼 튜브안이다.
+				for (int j = 0; j < v[prev.first].size(); j++) {
+					if (v[prev.first][j] == N) {
+						printf("%d", prev.second);
+						return 0;
+					}
+					if (visit_table[v[prev.first][j]] == 0) {
+						q.push({ v[prev.first][j], prev.second});
+						visit_table[v[prev.first][j]] = 1;
+					}
+				}
+			}
+			else {
+				//지금 역이다. 하이퍼튜브를 이용한다. prev.second +=1;
+				for (int j = 0; j < v[prev.first].size(); j++) {
+					if (visit_table[v[prev.first][j]] == 0) {
+						q.push({ v[prev.first][j], prev.second +1});
+						visit_table[v[prev.first][j]] = 1;
+					}
+				}
+			}
+		}
+	}
+	printf("-1");
+	return 0;
+}

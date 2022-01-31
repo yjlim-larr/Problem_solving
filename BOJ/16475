@@ -1,0 +1,117 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+//#pragma warning(disable:4996)
+using namespace std;
+
+struct state {
+	int prev;
+	int d; //거리
+	int p; // 버튼 횟수.
+	bool s; //현재 함정길이의 방향.
+	state(int a, int b, int c, int d) :prev(a), d(b), p(c), s(d) {}
+	bool operator <(state A)const { return d > A.d; }
+};
+
+const int INF = 2e9;
+const int n_ = 1e4 + 1;
+int N, M, K, L, P;
+int start, goal;
+int min_num = INF;
+bool table[n_];
+int visit[n_][11][2];
+bool check = 0;
+vector<pair<int, int>> v[n_];
+vector<pair<int, int>> front[n_];
+vector<pair<int, int>> back[n_];
+priority_queue<struct state> q;
+
+/*
+visit을 어떻게 처리하는지가 관건.
+*/
+
+int main() {
+	//freopen("input.txt", "r", stdin);
+	cin >> N >> M >> K >> L >> P;
+
+	for (int i = 0; i < K; i++) {
+		int a;
+		cin >> a;
+		table[a] = 1; //함정지역
+	}
+
+	for (int i = 0; i < M - L; i++) {
+		int a, b, c;
+		cin >> a >> b >> c;
+		v[a].push_back({ b,c });
+	}
+
+	for (int i = 0; i < L; i++) {
+		int a, b, c;
+		cin >> a >> b >> c;
+		front[a].push_back({ b,c });
+		back[b].push_back({ a,c });
+	}
+
+	cin >> start >> goal;
+	//함정지역은 재방문ㅇ 가능.
+
+	for (int i = 1; i <= N; i++) 
+		for (int j = 0; j <= P; j++) {
+			visit[i][j][0] = INF;
+			visit[i][j][1] = INF;
+		}
+		
+	q.push({ start,0,0,1 });
+
+	while (!q.empty()) {
+		struct state prev = q.top();
+		q.pop();
+
+		if (table[prev.prev] == 1) { //함정지역
+			prev.p += 1;
+
+			if (prev.p == P) {
+				prev.p -= P;
+				prev.s = !prev.s;
+			}
+		}
+
+		if (visit[prev.prev][prev.p][prev.s] < prev.d) continue;
+		else visit[prev.prev][prev.p][prev.s] = prev.d;
+
+		if (prev.prev == goal) {
+			check = 1;
+			min_num = prev.d < min_num ? prev.d : min_num;
+			continue;
+		}
+
+		int size = v[prev.prev].size();
+		for (int i = 0; i < size; i++) {
+			q.push({ v[prev.prev][i].first, 
+				prev.d + v[prev.prev][i].second, prev.p, prev.s });
+		}
+
+		if (prev.s == 1) { //정방향.
+			size = front[prev.prev].size();
+			for (int i = 0; i < size; i++) {
+				q.push({ front[prev.prev][i].first , 
+					prev.d + front[prev.prev][i].second, prev.p, prev.s });
+			}
+		}
+		else { // 역방향.
+			size = back[prev.prev].size();
+			for (int i = 0; i < size; i++) {
+				q.push({back[prev.prev][i].first,
+					prev.d + back[prev.prev][i].second, prev.p, prev.s });
+			}
+		}
+	}
+
+	if (check == 0)
+		cout << "-1";
+	else
+		cout << min_num;
+
+	return 0;
+}

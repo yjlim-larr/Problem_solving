@@ -1,0 +1,52 @@
+#include <cstdio>
+#include <algorithm>
+#define MAX_N 2000
+using namespace std;
+int n, a[2 * MAX_N + 1], b[2 * MAX_N + 1], cur, par[MAX_N + 1][15], m, d[MAX_N + 1], q, w, r, f, g;
+int lca(int x, int y) {
+    for (int j = 1; j < 15; j++) {
+        for (int i = 1; i <= n; i++)
+            par[i][j] = par[par[i][j - 1]][j - 1];
+    }
+    if (d[x] > d[y])
+        swap(x, y);
+    for (int i = 14; i >= 0; i--) {
+        if (d[y] - d[x] >= (1 << i))
+            y = par[y][i];
+    }
+    if (x == y)return x;
+    for (int i = 14; i >= 0; i--) {
+        if (par[x][i] != par[y][i]) {
+            x = par[x][i];
+            y = par[y][i];
+        }
+    }
+    return par[x][0];
+}
+int main() {
+    scanf("%d", &n);
+    for (int i = 1; i <= 2 * n; i++) 
+        scanf("%1d", &a[i]);
+    for (int i = 1; i <= 2 * n; i++) {
+        if (!a[i]) {
+            par[++m][0] = cur;
+            d[m] = d[cur] + 1;
+            cur = m;
+            b[i] = m;
+        }
+        else {
+            b[i] = cur;
+            cur = par[cur][0];
+        }
+    }
+    scanf("%d%d", &q, &w);
+    r = lca(b[q], b[w]);
+    for (int i = 1; i <= 2 * n; i++) {
+        if (!a[i] && b[i] == r)
+            g = i;
+        if (a[i] && b[i] == r)
+            f = i;
+    }
+    printf("%d %d\n", g, f);
+    return 0;
+}

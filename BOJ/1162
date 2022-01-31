@@ -1,0 +1,80 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+using namespace std;
+typedef long long ll;
+
+const ll INF = 51000000000;
+
+struct compare {
+	bool operator()(pair < ll, pair < ll, ll >> p1, pair < ll, pair < ll, ll >> p2) {
+		return p1.second.first > p2.second.first;
+	}
+};
+
+
+int N, M, K;
+vector<pair<int, ll>> v[10001];
+ll table[10001][21];
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	for (int i = 0; i < 10001; i++) {
+		for (int j = 0; j < 21; j++) {
+			table[i][j] = INF;
+		}
+	}
+
+	cin >> N >> M >> K;
+	for (int i = 0; i < M; i++) {
+		ll a, b, c;
+		cin >> a >> b >> c;
+		v[a].push_back({ b,c });
+		v[b].push_back({ a,c });
+	}
+
+	priority_queue < pair < ll, pair < ll, ll >>, vector<pair < ll, pair < ll, ll >>>, compare > q;
+	q.push({ 1, {0, 0} });
+	table[1][0] = 0;
+
+	while (!q.empty()) {
+		pair < ll, pair<ll, ll>> s = q.top();
+		q.pop();
+
+		ll prev = s.first;
+		ll prev_time = s.second.first;
+		ll cnt = s.second.second;
+
+		if (table[prev][cnt] < prev_time)
+			continue;
+
+		int size = v[prev].size();
+
+		for (int i = 0; i < size; i++) {
+			int next = v[prev][i].first;
+
+			if (table[next][cnt] > prev_time + v[prev][i].second) {
+				table[next][cnt] = prev_time + v[prev][i].second;
+				q.push({ next,{prev_time + v[prev][i].second, cnt} });
+			}
+
+			if (cnt < K) {
+				if (table[next][cnt + 1] > prev_time) {
+					table[next][cnt + 1] = prev_time;
+					q.push({ next,{prev_time, cnt + 1} });
+				}
+			}
+		}
+	}
+
+	ll ans = INF;
+	for (int i = 0; i <= K; i++) {
+		ans = ans < table[N][i] ? ans : table[N][i];
+	}
+
+	cout << ans;
+	return 0;
+}

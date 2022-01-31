@@ -1,0 +1,61 @@
+#include<iostream>
+#include<vector>
+#include<utility>
+#include<algorithm>
+using namespace std;
+
+int dp[51]; //idx에서 자기 자식까지 전부 전달하는데 걸리는 최단 시간.
+vector<int> v[51];
+int N;
+
+
+int dfs(int prev){
+	if(dp[prev] == 1e9){
+		dp[prev] = 0;
+		int size = v[prev].size();
+		
+		if(size == 0){
+			dp[prev] = 0;
+			return 0;
+		}
+
+        int arr[51];
+		for(int i=0; i<size; i++){
+			int ans  = dfs(v[prev][i]);
+			arr[i] = ans;
+		}
+        
+        sort(arr, arr+size, greater<int>());
+        
+        for(int i=0; i<size; i++){
+            int ret = arr[i] + i+1;
+            dp[prev] = ret < dp[prev] ? dp[prev] : ret;
+        }
+	}
+	
+	return dp[prev];
+}
+
+
+int main(){
+	cin >> N;
+
+	int start =0;
+	for(int i=0; i<N; i++){
+		int a;
+		cin >> a;
+		
+		if(a == -1){
+			start = i;
+		}else{
+			v[a].push_back(i);
+		}
+	}	
+	
+	for(int i=0; i<N; i++)
+		dp[i] = 1e9;
+	
+	cout << dfs(start);
+	
+	return 0;
+}
